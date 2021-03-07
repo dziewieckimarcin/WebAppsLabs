@@ -1,0 +1,9 @@
+.summary-label-element{
+    display: inline-block;
+    font-weight: bold;
+}
+
+.summary-value-element{
+    display: inline-block;
+    font-weight: bold;
+}
