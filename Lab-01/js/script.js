@@ -5,36 +5,58 @@ var SingleInputRow = /** @class */ (function () {
     }
     SingleInputRow.prototype.create = function (parentElement) {
         this.currentElement = document.createElement('div');
-        this.createRemoveCheckbox();
-        this.createInput();
-        this.createRemoveButton();
+        this.currentElement.className = 'box py-2 my-2';
+        var fieldElement = document.createElement('div');
+        fieldElement.className = 'field is-grouped';
+        this.createRemoveCheckbox(fieldElement);
+        this.createInput(fieldElement);
+        this.createRemoveButton(fieldElement);
+        this.currentElement.appendChild(fieldElement);
         parentElement.appendChild(this.currentElement);
     };
-    SingleInputRow.prototype.createRemoveCheckbox = function () {
+    SingleInputRow.prototype.createRemoveCheckbox = function (parent) {
         var _this = this;
+        var checkboxControlElement = document.createElement('div');
+        checkboxControlElement.className = 'control py-1';
+        var id = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        var labelElement = document.createElement('label');
+        labelElement.htmlFor = id;
         this.checkBoxElement = document.createElement('input');
         this.checkBoxElement.type = 'checkbox';
+        this.checkBoxElement.className = 'is-checkradio is-large is-info';
+        this.checkBoxElement.id = id;
         this.checkBoxElement.addEventListener('input', function () { return _this.removeCheckBoxValueChanged(); });
-        this.currentElement.appendChild(this.checkBoxElement);
+        checkboxControlElement.appendChild(this.checkBoxElement);
+        checkboxControlElement.appendChild(labelElement);
+        parent.appendChild(checkboxControlElement);
     };
     SingleInputRow.prototype.removeCheckBoxValueChanged = function () {
         this.isChecked = this.checkBoxElement.checked;
     };
-    SingleInputRow.prototype.createInput = function () {
+    SingleInputRow.prototype.createInput = function (parent) {
         var _this = this;
+        var inputControlElement = document.createElement('div');
+        inputControlElement.className = 'control is-expanded';
         this.inputElement = document.createElement('input');
+        this.inputElement.className = 'input is-info';
         this.currentElement.appendChild(this.inputElement);
         this.inputElement.addEventListener('input', function () { return _this.inputValueCahnged(); });
+        inputControlElement.appendChild(this.inputElement);
+        parent.appendChild(inputControlElement);
     };
     SingleInputRow.prototype.inputValueCahnged = function () {
         this.onInputUpdate();
     };
-    SingleInputRow.prototype.createRemoveButton = function () {
+    SingleInputRow.prototype.createRemoveButton = function (parent) {
         var _this = this;
+        var buttonControlElement = document.createElement('div');
+        buttonControlElement.className = 'control';
         var removeButton = document.createElement('button');
         removeButton.innerHTML = 'Usuń';
+        removeButton.className = 'button is-danger';
         removeButton.addEventListener('click', function () { return _this.remove(); });
-        this.currentElement.appendChild(removeButton);
+        buttonControlElement.appendChild(removeButton);
+        parent.appendChild(buttonControlElement);
     };
     SingleInputRow.prototype.remove = function () {
         this.onRemoveElement(this);

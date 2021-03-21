@@ -5,38 +5,118 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stats App</title>
-    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/bulma.css">
+    <link rel="stylesheet" href="./css/bulma-checkradio.min.css">
 </head>
 <body>
-    <div class="summary-section">
-        <div class="title-element">Statystyki</div>
-        <div class="summary-element">
-            <label class="summary-label-element">Suma</label>
-            <p id="sum-value" class="summary-value-element"></p>
-        </div>
-        <div class="summary-element">
-            <label class="summary-label-element">Średnia</label>
-            <p id="avg-value" class="summary-value-element"></p>
-        </div>
-        <div class="summary-element">
-            <label class="summary-label-element">Min</label>
-            <p id="min-value" class="summary-value-element"></p>
-        </div>
-        <div class="summary-element">
-            <label class="summary-label-element">Max</label>
-            <p id="max-value" class="summary-value-element"></p>
-        </div>
-    </div>
-    <div id="inputs-section" class="input-section">
-    </div>
 
-    <div>
-        <button id="remove-checked">Usuń zaznaczone wiersze</button>
-        <button id="add-single-row">Dodaj wiersz</button>
-        <label>Liczba wierszy:</label>
-        <input id="add-multiple-rows-input-value"/>
-        <button id="add-multiple-rows">Dodaj wiele wierszy</button>
-    </div>
+    <section class="hero is-small is-info">
+        <div class="hero-body">
+            <div class="container has-text-centered">
+                <p class="title">
+                    Statystyki
+                  </p>
+            </div>
+        </div>
+      </section>
+    
+      <section class="section">
+          <div class="container is-widescreen">
+            <div class="columns">
+
+                <div class="column">
+                  <div class="card">
+                    <div class="card-header">
+                        <div class="card-header-title">
+                            <div class="container has-text-centered">
+                                <span>Suma: </span>
+                                <span class="has-text-weight-normal" id="sum-value"></span>
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="column">
+                    <div class="card">
+                      <div class="card-header">
+                          <div class="card-header-title">
+                              <div class="container has-text-centered">
+                                  <span>Średnia: </span>
+                                  <span class="has-text-weight-normal" id="avg-value"></span>
+                              </div>
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="column">
+                    <div class="card">
+                      <div class="card-header">
+                          <div class="card-header-title">
+                              <div class="container has-text-centered">
+                                  <span>Min: </span>
+                                  <span class="has-text-weight-normal" id="min-value"></span>
+                              </div>
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="column">
+                    <div class="card">
+                      <div class="card-header">
+                          <div class="card-header-title">
+                              <div class="container has-text-centered">
+                                  <span>Max: </span>
+                                  <span class="has-text-weight-normal" id="max-value"></span>
+                              </div>
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+          </div>
+      </section>
+
+      <section class="section pt-0">
+          <div class="container is-max-desktop">
+              <div id="inputs-section"><div>
+          </div>
+      </section>
+
+      <section class="section pt-3">
+        <div class="container">
+
+              <div class="columns is-multiline">
+                  <div class="column is-full-desktop is-half-touch is-full-tablet is-half-widescreen">
+                    <div class="field is-grouped is-grouped-centered">
+                        <div class="control">
+                          <button class="button is-danger" id="remove-checked">Usuń zaznaczone wiersze</button>
+                        </div>
+                        <div class="control">
+                          <button class="button is-info" id="add-single-row">Dodaj wiersz</button>
+                        </div>
+                    </div>
+                  </div>
+                <div class="column is-full-desktop is-half-touch is-full-tablet is-half-widescreen">
+                        <div class="field is-grouped is-grouped-centered">
+                            <div class="control py-2">
+                                <div class="label">Dodaj wiele wierszy:</div>
+                            </div>
+                            <div class="control">
+                                <input class="input" id="add-multiple-rows-input-value"/>
+                            </div>
+                            <div class="control">
+                                <button class="button is-info" id="add-multiple-rows">Dodaj</button>
+                            </div>
+                        </div>
+                </div>
+              </div>
+
+            
+        </div>
+    </section>
 
     <script src="./js/script.js"></script>
 </body>
