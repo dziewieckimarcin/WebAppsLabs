@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "outFile": "./js/script.js",
+      },
+
+    "include": [
+        "ts/**/*"
+    ],
+        
+}
