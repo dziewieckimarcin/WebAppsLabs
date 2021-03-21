@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Stats App</title>
     <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
@@ -12,26 +12,32 @@
         <div class="title-element">Statystyki</div>
         <div class="summary-element">
             <label class="summary-label-element">Suma</label>
-            <p class="summary-value-element">---</p>
+            <p id="sum-value" class="summary-value-element"></p>
         </div>
         <div class="summary-element">
             <label class="summary-label-element">Średnia</label>
-            <p class="summary-value-element">---</p>
+            <p id="avg-value" class="summary-value-element"></p>
         </div>
         <div class="summary-element">
             <label class="summary-label-element">Min</label>
-            <p class="summary-value-element">---</p>
+            <p id="min-value" class="summary-value-element"></p>
         </div>
         <div class="summary-element">
             <label class="summary-label-element">Max</label>
-            <p class="summary-value-element">---</p>
+            <p id="max-value" class="summary-value-element"></p>
         </div>
     </div>
-    <div class="input-section">
-        <input type="number" class="input-element">
-        <input type="number" class="input-element">
-        <input type="number" class="input-element">
-        <input type="number" class="input-element">
+    <div id="inputs-section" class="input-section">
     </div>
+
+    <div>
+        <button id="remove-checked">Usuń zaznaczone wiersze</button>
+        <button id="add-single-row">Dodaj wiersz</button>
+        <label>Liczba wierszy:</label>
+        <input id="add-multiple-rows-input-value"/>
+        <button id="add-multiple-rows">Dodaj wiele wierszy</button>
+    </div>
+
+    <script src="./js/script.js"></script>
 </body>
 </html>
