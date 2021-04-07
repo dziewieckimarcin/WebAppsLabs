@@ -34,13 +34,33 @@ class Stats{
             this.updateDocumentValues();
         }
         else{
-            this.sumValue = this.getSum(values).toString();
-            this.avgValue = this.getAvg(values).toString();
-            this.minValue = this.getMin(values).toString();
-            this.maxValue = this.getMax(values).toString();
+            const decimalPoints = 2;
+
+            this.sumValue = this.fixStringValue(this.getSum(values), decimalPoints);
+            this.avgValue = this.fixStringValue(this.getAvg(values), decimalPoints);
+            this.minValue = this.fixStringValue(this.getMin(values), decimalPoints);
+            this.maxValue = this.fixStringValue(this.getMax(values), decimalPoints);
 
             this.updateDocumentValues();
         }
+    }
+
+    private fixStringValue(value: number, decimalPoints: number): string{
+        if (decimalPoints <= 0)
+            return value.toFixed(0);
+        
+        let x = value.toFixed(decimalPoints);
+
+        for (let index = 0; index < decimalPoints; index++) {
+            console.log(x[x.length - decimalPoints]);
+            if  (x[x.length - 1] == "0")
+                x = x.slice(0, x.length - 1);
+        }
+
+        if (x[x.length -1] == "." || x[x.length -1] == ",")
+            x = x.slice(0, x.length - 1);
+
+        return x;
     }
 
     private checkIfArrayIsInvalid(values: number[]):Boolean{
