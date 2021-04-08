@@ -4,9 +4,183 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Drum Kit</title>
+    <link rel="stylesheet" href="./css/bulma.css">
+    <link rel="stylesheet" href="./css/custom.css">
 </head>
 <body>
+
+    <section class="hero is-small is-info">
+        <div class="hero-body">
+            <div class="container has-text-centered">
+                <p class="title">
+                    Drum Kit
+                  </p>
+            </div>
+        </div>
+      </section>
+
+      <section class="section py-5">
+        <div class="container is-max-desktop">
+            <div class="columns is-centered is-mobile is-multiline">
+
+                <div class="column is-narrow">
+                    <div class="box custom-button-size has-background-info-dark is-clickable has-text-centered ">
+                        <div class="py-5 is-size-2 has-text-white">Q</div>
+                    </div>
+                </div>
+
+                <div class="column is-narrow">
+                    <div class="box custom-button-size has-background-info-dark is-clickable has-text-centered ">
+                        <div class="py-5 is-size-2 has-text-white">W</div>
+                    </div>
+                </div>
+
+                <div class="column is-narrow">
+                    <div class="box custom-button-size has-background-info-dark is-clickable has-text-centered ">
+                        <div class="py-5 is-size-2 has-text-white">E</div>
+                    </div>
+                </div>
+
+                <div class="column is-narrow">
+                    <div class="box custom-button-size has-background-info-dark is-clickable has-text-centered ">
+                        <div class="py-5 is-size-2 has-text-white">R</div>
+                    </div>
+                </div>
+
+                <div class="column is-narrow">
+                    <div class="box custom-button-size has-background-info-dark is-clickable has-text-centered ">
+                        <div class="py-5 is-size-2 has-text-white">T</div>
+                    </div>
+                </div>
+
+                <div class="column is-narrow">
+                    <div class="box custom-button-size has-background-info-dark is-clickable has-text-centered ">
+                        <div class="py-5 is-size-2 has-text-white">A</div>
+                    </div>
+                </div>
+
+                <div class="column is-narrow">
+                    <div class="box custom-button-size has-background-info-dark is-clickable has-text-centered ">
+                        <div class="py-5 is-size-2 has-text-white">S</div>
+                    </div>
+                </div>
+
+                <div class="column is-narrow">
+                    <div class="box custom-button-size has-background-info-dark is-clickable has-text-centered ">
+                        <div class="py-5 is-size-2 has-text-white">D</div>
+                    </div>
+                </div>
+
+                <div class="column is-narrow">
+                    <div class="box custom-button-size has-background-info-dark is-clickable has-text-centered ">
+                        <div class="py-5 is-size-2 has-text-white">F</div>
+                    </div>
+                </div>
+
+                <div class="column is-narrow">
+                    <div class="box custom-button-size has-background-info-dark is-clickable has-text-centered ">
+                        <div class="py-5 is-size-2 has-text-white">G</div>
+                    </div>
+                </div>
+       
+            </div>
+        </div>
+      </section>
+
+      <section class="section py-0">
+        <div class="container is-max-widescreen">
+            <div id="tracks-section">
+
+                <!-- <div class="box py-2 my-2">
+                    <progress class="progress is-danger my-4" value="90" max="100"></progress>
+                    <div class="field is-grouped is-grouped-centered">
+                        <div class="control py-1">
+                            <button class="button">On/Off</button>
+                        </div>
+                        <div class="control py-1">
+                            <div class="button">Play Track</div>
+                        </div>
+                        <div class="control py-1">
+                            <div class="button">Play active tracks and record</div>
+                        </div>
+                        <div class="control py-1">
+                            <div class="button">Remove</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="box py-2 my-2">
+                    <div class="field is-grouped">
+                        <div class="control py-1">
+                            <div class="button">On/Off</div>
+                        </div>
+                        <div class="control py-1">
+                            <div class="button">Play Track</div>
+                        </div>
+                        <div class="control py-1">
+                            <div class="button">Play active tracks and record</div>
+                        </div>
+                        <progress class="progress is-danger m-4" value="90" max="100">90%</progress>
+                        <div class="control py-1">
+                            <div class="button">Remove</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="box py-2 my-2">
+                    <div class="field is-grouped">
+                        <div class="control py-1">
+                            <div class="button">On/Off</div>
+                        </div>
+                        <div class="control py-1">
+                            <div class="button">Play Track</div>
+                        </div>
+                        <div class="control py-1">
+                            <div class="button">Play active tracks and record</div>
+                        </div>
+                        <progress class="progress is-danger m-4" value="90" max="100">90%</progress>
+                        <div class="control py-1">
+                            <div class="button">Remove</div>
+                        </div>
+                    </div>
+                </div> -->
+
+            <div>
+        </div>
+    </section>
+
+
+    <section class="section py-4">
+        <div class="container is-max-desktop">
+            <div class="columns is-centered">
+                <div class="column is-narrow">
+                    <div class="box py-2">
+                        <div class="field is-grouped is-grouped-centered">
+                            <div class="control py-1">
+                                <button id="addTrackId" class="button">Add track</button>
+                            </div>
+                            <div class="control py-1">
+                                <button id="playTracksId" class="button">Play active tracks</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
     
+
+    <audio src="sounds/boom.wav" id="boomSoundId"></audio>
+    <audio src="sounds/clap.wav" id="clapSoundId"></audio>
+    <audio src="sounds/hihat.wav" id="hihatSoundId"></audio>
+    <audio src="sounds/kick.wav" id="kickSoundId"></audio>
+    <audio src="sounds/openhat.wav" id="openhatSoundId"></audio>
+    <audio src="sounds/ride.wav" id="rideSoundId"></audio>
+    <audio src="sounds/snare.wav" id="snareSoundId"></audio>
+    <audio src="sounds/tink.wav" id="tinkSoundId"></audio>
+    <audio src="sounds/tom.wav" id="tomSoundId"></audio>
+
+    <script src="./js/script.js"></script>
 </body>
 </html>

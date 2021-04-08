@@ -1,0 +1,296 @@
+var SoundTypeEnum;
+(function (SoundTypeEnum) {
+    SoundTypeEnum[SoundTypeEnum["boom"] = 0] = "boom";
+    SoundTypeEnum[SoundTypeEnum["clap"] = 1] = "clap";
+    SoundTypeEnum[SoundTypeEnum["hihat"] = 2] = "hihat";
+    SoundTypeEnum[SoundTypeEnum["kick"] = 3] = "kick";
+    SoundTypeEnum[SoundTypeEnum["openhat"] = 4] = "openhat";
+    SoundTypeEnum[SoundTypeEnum["ride"] = 5] = "ride";
+    SoundTypeEnum[SoundTypeEnum["snare"] = 6] = "snare";
+    SoundTypeEnum[SoundTypeEnum["tink"] = 7] = "tink";
+    SoundTypeEnum[SoundTypeEnum["tom"] = 8] = "tom";
+})(SoundTypeEnum || (SoundTypeEnum = {}));
+/// <reference path='soundTypeEnum.ts'/>
+var Sounds = /** @class */ (function () {
+    function Sounds() {
+    }
+    Sounds.prototype.playSound = function (soundType) {
+        var audioElement;
+        switch (soundType) {
+            case SoundTypeEnum.boom:
+                audioElement = document.getElementById("boomSoundId");
+                break;
+            case SoundTypeEnum.clap:
+                audioElement = document.getElementById("clapSoundId");
+                break;
+            case SoundTypeEnum.hihat:
+                audioElement = document.getElementById("hihatSoundId");
+                break;
+            case SoundTypeEnum.kick:
+                audioElement = document.getElementById("kickSoundId");
+                break;
+            case SoundTypeEnum.openhat:
+                audioElement = document.getElementById("openhatSoundId");
+                break;
+            case SoundTypeEnum.ride:
+                audioElement = document.getElementById("rideSoundId");
+                break;
+            case SoundTypeEnum.snare:
+                audioElement = document.getElementById("snareSoundId");
+                break;
+            case SoundTypeEnum.tink:
+                audioElement = document.getElementById("tinkSoundId");
+                break;
+            case SoundTypeEnum.tom:
+                audioElement = document.getElementById("tomSoundId");
+                break;
+            default:
+                audioElement = document.getElementById("boomSoundId");
+                break;
+        }
+        audioElement.currentTime = 0;
+        audioElement.play();
+    };
+    return Sounds;
+}());
+/// <reference path='./record/soundTypeEnum.ts'/>
+/// <reference path='./record/sounds.ts'/>
+var Drums = /** @class */ (function () {
+    function Drums() {
+        var _this = this;
+        this.sounds = new Sounds();
+        document.addEventListener("keypress", function (e) { return _this.onKeyPress(e); });
+    }
+    Drums.prototype.onKeyPress = function (e) {
+        switch (e.key.toUpperCase()) {
+            case 'Q':
+                this.makeDrum(SoundTypeEnum.boom);
+                break;
+            case 'W':
+                this.makeDrum(SoundTypeEnum.clap);
+                break;
+            case 'E':
+                this.makeDrum(SoundTypeEnum.hihat);
+                break;
+            case 'R':
+                this.makeDrum(SoundTypeEnum.kick);
+                break;
+            case 'T':
+                this.makeDrum(SoundTypeEnum.openhat);
+                break;
+            case 'A':
+                this.makeDrum(SoundTypeEnum.ride);
+                break;
+            case 'S':
+                this.makeDrum(SoundTypeEnum.snare);
+                break;
+            case 'D':
+                this.makeDrum(SoundTypeEnum.tink);
+                break;
+            case 'F':
+                this.makeDrum(SoundTypeEnum.tom);
+                break;
+            case 'G':
+                this.makeDrum(SoundTypeEnum.boom);
+                break;
+            default:
+                break;
+        }
+    };
+    Drums.prototype.makeDrum = function (sound) {
+        this.sounds.playSound(sound);
+    };
+    return Drums;
+}());
+var SingleTrack = /** @class */ (function () {
+    function SingleTrack() {
+        this.isOn = true;
+        this.isRecording = false;
+        this.isRecordingWithBackground = false;
+        this.isPlaying = false;
+        this.create(document.getElementById("tracks-section"));
+        this.setButtonDefaults();
+        this.addButtonListeners();
+    }
+    SingleTrack.prototype.create = function (parentElement) {
+        this.currentElement = document.createElement('div');
+        this.currentElement.className = 'box py-2 my-2';
+        this.progressBar = document.createElement('progress');
+        this.progressBar.className = 'progress is-danger my-4';
+        this.progressBar.value = 0;
+        this.progressBar.max = 100;
+        var field = document.createElement('div');
+        field.className = 'field is-grouped is-grouped-centered';
+        var controlOnOffButton = document.createElement('div');
+        controlOnOffButton.className = 'control py-1';
+        var controlPlayTrackButton = document.createElement('div');
+        controlPlayTrackButton.className = 'control py-1';
+        var controlRecordButton = document.createElement('div');
+        controlRecordButton.className = 'control py-1';
+        var controlRecordWithBackgroundButton = document.createElement('div');
+        controlRecordWithBackgroundButton.className = 'control py-1';
+        var controlRemoveButton = document.createElement('div');
+        controlRemoveButton.className = 'control py-1';
+        this.onOffButton = document.createElement('button');
+        this.onOffButton.className = 'button';
+        this.onOffButton.innerText = "On/Off";
+        this.playTrackButton = document.createElement('button');
+        this.playTrackButton.className = 'button';
+        this.playTrackButton.innerText = "Play/Stop Track";
+        this.recordButton = document.createElement('button');
+        this.recordButton.className = 'button';
+        this.recordButton.innerText = "Start/Stop Record";
+        this.recordWithBackgroundButton = document.createElement('button');
+        this.recordWithBackgroundButton.className = 'button';
+        this.recordWithBackgroundButton.innerText = "Start/Stop Record with Background";
+        this.removeButton = document.createElement('button');
+        this.removeButton.className = 'button is-danger';
+        this.removeButton.innerText = "Remove";
+        controlOnOffButton.appendChild(this.onOffButton);
+        controlPlayTrackButton.appendChild(this.playTrackButton);
+        controlRecordButton.appendChild(this.recordButton);
+        controlRecordWithBackgroundButton.appendChild(this.recordWithBackgroundButton);
+        controlRemoveButton.appendChild(this.removeButton);
+        field.appendChild(controlOnOffButton);
+        field.appendChild(controlPlayTrackButton);
+        field.appendChild(controlRecordButton);
+        field.appendChild(controlRecordWithBackgroundButton);
+        field.appendChild(controlRemoveButton);
+        this.currentElement.appendChild(this.progressBar);
+        this.currentElement.appendChild(field);
+        parentElement.appendChild(this.currentElement);
+    };
+    SingleTrack.prototype.addButtonListeners = function () {
+        var _this = this;
+        this.removeButton.addEventListener("click", function () { return _this.remove(); });
+        this.onOffButton.addEventListener("click", function () { return _this.toggleOnOff(); });
+        this.recordButton.addEventListener("click", function () { return _this.toggleRecord(); });
+        this.recordWithBackgroundButton.addEventListener("click", function () { return _this.toggleRecordWithBackground(); });
+        this.playTrackButton.addEventListener("click", function () { return _this.togglePlayTrack(); });
+    };
+    SingleTrack.prototype.setButtonDefaults = function () {
+        this.setOnOffButtonsStyle();
+        this.setRecordButtonsStyle();
+        this.setRecordWithBackgroundButtonsStyle();
+        this.setPlayTrackButtonsStyle();
+    };
+    SingleTrack.prototype.remove = function () {
+        this.currentElement.parentElement.removeChild(this.currentElement);
+    };
+    SingleTrack.prototype.toggleOnOff = function () {
+        this.isOn = !this.isOn;
+        this.setOnOffButtonsStyle();
+    };
+    SingleTrack.prototype.setOnOffButtonsStyle = function () {
+        if (this.isOn) {
+            this.onOffButton.classList.add("is-success");
+            this.onOffButton.classList.remove("is-danger");
+            this.onOffButton.classList.remove("is-light");
+            this.playTrackButton.classList.remove("is-static");
+            this.recordButton.classList.remove("is-static");
+            this.recordWithBackgroundButton.classList.remove("is-static");
+        }
+        else {
+            this.onOffButton.classList.remove("is-success");
+            this.onOffButton.classList.add("is-danger");
+            this.onOffButton.classList.add("is-light");
+            this.playTrackButton.classList.add("is-static");
+            this.recordButton.classList.add("is-static");
+            this.recordWithBackgroundButton.classList.add("is-static");
+        }
+    };
+    SingleTrack.prototype.toggleRecord = function () {
+        this.isRecording = !this.isRecording;
+        this.setRecordButtonsStyle();
+    };
+    SingleTrack.prototype.setRecordButtonsStyle = function () {
+        if (this.isRecording) {
+            this.recordButton.classList.add("is-danger");
+            this.recordButton.classList.remove("is-info");
+            this.onOffButton.classList.add("is-static");
+            this.playTrackButton.classList.add("is-static");
+            this.recordWithBackgroundButton.classList.add("is-static");
+            this.removeButton.classList.add("is-static");
+        }
+        else {
+            this.recordButton.classList.remove("is-danger");
+            this.recordButton.classList.add("is-info");
+            this.onOffButton.classList.remove("is-static");
+            this.playTrackButton.classList.remove("is-static");
+            this.recordWithBackgroundButton.classList.remove("is-static");
+            this.removeButton.classList.remove("is-static");
+        }
+    };
+    SingleTrack.prototype.toggleRecordWithBackground = function () {
+        this.isRecordingWithBackground = !this.isRecordingWithBackground;
+        this.setRecordWithBackgroundButtonsStyle();
+    };
+    SingleTrack.prototype.setRecordWithBackgroundButtonsStyle = function () {
+        if (this.isRecordingWithBackground) {
+            this.recordWithBackgroundButton.classList.add("is-danger");
+            this.recordWithBackgroundButton.classList.remove("is-info");
+            this.onOffButton.classList.add("is-static");
+            this.playTrackButton.classList.add("is-static");
+            this.recordButton.classList.add("is-static");
+            this.removeButton.classList.add("is-static");
+        }
+        else {
+            this.recordWithBackgroundButton.classList.remove("is-danger");
+            this.recordWithBackgroundButton.classList.add("is-info");
+            this.onOffButton.classList.remove("is-static");
+            this.playTrackButton.classList.remove("is-static");
+            this.recordButton.classList.remove("is-static");
+            this.removeButton.classList.remove("is-static");
+        }
+    };
+    SingleTrack.prototype.togglePlayTrack = function () {
+        this.isPlaying = !this.isPlaying;
+        this.setPlayTrackButtonsStyle();
+    };
+    SingleTrack.prototype.setPlayTrackButtonsStyle = function () {
+        if (this.isPlaying) {
+            this.playTrackButton.classList.add("is-danger");
+            this.playTrackButton.classList.remove("is-success");
+            this.onOffButton.classList.add("is-static");
+            this.recordButton.classList.add("is-static");
+            this.recordWithBackgroundButton.classList.add("is-static");
+            this.removeButton.classList.add("is-static");
+        }
+        else {
+            this.playTrackButton.classList.remove("is-danger");
+            this.playTrackButton.classList.add("is-success");
+            this.onOffButton.classList.remove("is-static");
+            this.recordButton.classList.remove("is-static");
+            this.recordWithBackgroundButton.classList.remove("is-static");
+            this.removeButton.classList.remove("is-static");
+        }
+    };
+    return SingleTrack;
+}());
+/// <reference path='singleTrack.ts'/>
+var AllTracks = /** @class */ (function () {
+    function AllTracks() {
+        this.tracksColection = [];
+        this.addTrack();
+    }
+    AllTracks.prototype.addTrack = function () {
+        this.tracksColection.push(new SingleTrack());
+    };
+    return AllTracks;
+}());
+/// <reference path='./record/allTracks.ts'/>
+var Main = /** @class */ (function () {
+    function Main() {
+        var _this = this;
+        this.allTracks = new AllTracks();
+        this.drums = new Drums();
+        var addButton = document.getElementById("addTrackId");
+        addButton.addEventListener('click', function () { return _this.addTrack(); });
+    }
+    Main.prototype.addTrack = function () {
+        this.allTracks.addTrack();
+    };
+    return Main;
+}());
+/// <reference path='main.ts'/>
+var main = new Main();
