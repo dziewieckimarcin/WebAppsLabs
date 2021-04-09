@@ -1,3 +1,7 @@
+/// <reference path='trackElement.ts'/>
+/// <reference path='sounds.ts'/>
+/// <reference path='soundTypeEnum.ts'/>
+
 class SingleTrack{
 
     private currentElement: HTMLElement;
@@ -13,10 +17,28 @@ class SingleTrack{
     private isRecordingWithBackground: boolean = false;
     private isPlaying:boolean = false;
 
+    private elements: TrackElement[] = [];
+    private timeVector: number;
+
+    private sounds: Sounds
+
     constructor(){
         this.create(document.getElementById("tracks-section"));
         this.setButtonDefaults();
         this.addButtonListeners();
+    }
+
+    public addTrackElement(sound: SoundTypeEnum){
+        if (this.isRecording || this.isRecordingWithBackground){
+            let timeNow = performance.now();
+            this.elements.push(new TrackElement(sound, timeNow - this.timeVector));
+            this.timeVector = timeNow;
+        }
+    }
+
+    private startRecording(){
+        this.elements = [];
+        this.timeVector = performance.now();;
     }
 
     private create(parentElement: HTMLElement){
@@ -134,6 +156,12 @@ class SingleTrack{
     private toggleRecord(){
         this.isRecording = !this.isRecording;
         this.setRecordButtonsStyle();
+
+        if (this.isRecording)
+            this.startRecording();
+        else
+            console.log(this.elements);
+
     }
 
     private setRecordButtonsStyle(){

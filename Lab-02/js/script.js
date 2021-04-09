@@ -60,9 +60,17 @@ var Drums = /** @class */ (function () {
         var _this = this;
         this.sounds = new Sounds();
         document.addEventListener("keypress", function (e) { return _this.onKeyPress(e); });
+        var drumSection = document.getElementById("drumSectionId");
+        drumSection.addEventListener("click", function (e) { return _this.onMouseClick(e); });
     }
+    Drums.prototype.onMouseClick = function (e) {
+        this.selectDrum(e.target.innerText);
+    };
     Drums.prototype.onKeyPress = function (e) {
-        switch (e.key.toUpperCase()) {
+        this.selectDrum(e.key.toUpperCase());
+    };
+    Drums.prototype.selectDrum = function (option) {
+        switch (option) {
             case 'Q':
                 this.makeDrum(SoundTypeEnum.boom);
                 break;
@@ -99,19 +107,43 @@ var Drums = /** @class */ (function () {
     };
     Drums.prototype.makeDrum = function (sound) {
         this.sounds.playSound(sound);
+        this.onDrumEvent(sound);
     };
     return Drums;
 }());
+var TrackElement = /** @class */ (function () {
+    function TrackElement(soundType, delayTime) {
+        this.type = soundType;
+        this.delay = delayTime;
+    }
+    return TrackElement;
+}());
+/// <reference path='trackElement.ts'/>
+/// <reference path='sounds.ts'/>
+/// <reference path='soundTypeEnum.ts'/>
 var SingleTrack = /** @class */ (function () {
     function SingleTrack() {
         this.isOn = true;
         this.isRecording = false;
         this.isRecordingWithBackground = false;
         this.isPlaying = false;
+        this.elements = [];
         this.create(document.getElementById("tracks-section"));
         this.setButtonDefaults();
         this.addButtonListeners();
     }
+    SingleTrack.prototype.addTrackElement = function (sound) {
+        if (this.isRecording || this.isRecordingWithBackground) {
+            var timeNow = performance.now();
+            this.elements.push(new TrackElement(sound, timeNow - this.timeVector));
+            this.timeVector = timeNow;
+        }
+    };
+    SingleTrack.prototype.startRecording = function () {
+        this.elements = [];
+        this.timeVector = performance.now();
+        ;
+    };
     SingleTrack.prototype.create = function (parentElement) {
         this.currentElement = document.createElement('div');
         this.currentElement.className = 'box py-2 my-2';
@@ -202,6 +234,10 @@ var SingleTrack = /** @class */ (function () {
     SingleTrack.prototype.toggleRecord = function () {
         this.isRecording = !this.isRecording;
         this.setRecordButtonsStyle();
+        if (this.isRecording)
+            this.startRecording();
+        else
+            console.log(this.elements);
     };
     SingleTrack.prototype.setRecordButtonsStyle = function () {
         if (this.isRecording) {
@@ -268,6 +304,7 @@ var SingleTrack = /** @class */ (function () {
     return SingleTrack;
 }());
 /// <reference path='singleTrack.ts'/>
+/// <reference path='soundTypeEnum.ts'/>
 var AllTracks = /** @class */ (function () {
     function AllTracks() {
         this.tracksColection = [];
@@ -275,6 +312,11 @@ var AllTracks = /** @class */ (function () {
     }
     AllTracks.prototype.addTrack = function () {
         this.tracksColection.push(new SingleTrack());
+    };
+    AllTracks.prototype.recordDrum = function (soundType) {
+        this.tracksColection.forEach(function (element) {
+            element.addTrackElement(soundType);
+        });
     };
     return AllTracks;
 }());
@@ -286,9 +328,13 @@ var Main = /** @class */ (function () {
         this.drums = new Drums();
         var addButton = document.getElementById("addTrackId");
         addButton.addEventListener('click', function () { return _this.addTrack(); });
+        this.drums.onDrumEvent = function (e) { return _this.recordDrum(e); };
     }
     Main.prototype.addTrack = function () {
         this.allTracks.addTrack();
+    };
+    Main.prototype.recordDrum = function (soundType) {
+        this.allTracks.recordDrum(soundType);
     };
     return Main;
 }());

@@ -1,4 +1,5 @@
 /// <reference path='singleTrack.ts'/>
+/// <reference path='soundTypeEnum.ts'/>
 
 class AllTracks{
 
@@ -10,5 +11,11 @@ class AllTracks{
 
     public addTrack(){
         this.tracksColection.push(new SingleTrack());
+    }
+
+    public recordDrum(soundType: SoundTypeEnum){
+        this.tracksColection.forEach(element => {
+            element.addTrackElement(soundType);
+        });
     }
 }

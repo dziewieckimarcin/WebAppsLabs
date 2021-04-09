@@ -3,15 +3,28 @@
 
 class Drums{
 
+    public onDrumEvent: (soundType: SoundTypeEnum) => void;
+
     private sounds = new Sounds();
 
     constructor(){
         document.addEventListener("keypress", (e) => this.onKeyPress(e));
+
+        let drumSection = document.getElementById("drumSectionId");
+        drumSection.addEventListener("click", (e) => this.onMouseClick(e));
+    }
+
+    private onMouseClick(e: MouseEvent){
+        this.selectDrum((e.target as HTMLElement).innerText)
     }
 
 
     private onKeyPress(e: KeyboardEvent){
-        switch (e.key.toUpperCase()) {
+        this.selectDrum(e.key.toUpperCase());
+    }
+
+    private selectDrum(option: string){
+        switch (option) {
             case 'Q':
                 this.makeDrum(SoundTypeEnum.boom)
                 break;
@@ -47,9 +60,9 @@ class Drums{
         }
     }
 
-
     private makeDrum(sound: SoundTypeEnum){
         this.sounds.playSound(sound);
+        this.onDrumEvent(sound);
     }
 
 }
