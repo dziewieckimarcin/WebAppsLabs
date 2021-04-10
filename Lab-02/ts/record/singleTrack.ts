@@ -24,6 +24,7 @@ class SingleTrack{
     private timeVector: number;
     private elementsPlayIndex: number;
     private soundTimer;
+    private progressBarInterval;
 
     private sounds: Sounds = new Sounds();
 
@@ -63,6 +64,13 @@ class SingleTrack{
                 this.elementsPlayIndex = 0;
                 this.isPlaying = true;
                 this.setTimer();
+                this.setProgressBarInterval();
+
+                let max = 0;
+                this.elements.forEach(x => max += x.delay);
+
+                this.progressBar.value = 0;
+                this.progressBar.max = max;
             }
             else{
                 this.togglePlayTrack();
@@ -70,6 +78,8 @@ class SingleTrack{
         }
         else{
             clearTimeout(this.soundTimer);
+            clearInterval(this.progressBarInterval);
+            this.progressBar.value = 0;
         }
     }
 
@@ -88,6 +98,14 @@ class SingleTrack{
 
     private setTimer(){
         this.soundTimer = setTimeout(() => this.playSoundFromTrack(), this.elements[this.elementsPlayIndex].delay);
+    }
+
+    private setProgressBarInterval(){
+        this.progressBarInterval = setInterval(() => this.changeProgressBarValue(), 10);
+    }
+
+    private changeProgressBarValue(){
+        this.progressBar.value += 10;
     }
     
 
@@ -219,6 +237,10 @@ class SingleTrack{
 
         if (this.isRecording){
             this.startRecording();
+            this.progressBar.removeAttribute("value");
+        }
+        else{
+            this.progressBar.value = 0;
         }
     }
 
@@ -249,9 +271,11 @@ class SingleTrack{
 
         if (this.isRecordingWithBackground){
             this.startRecordingWithBackground();
+            this.progressBar.removeAttribute("value");
         }
         else{
             this.stopAllEvent();
+            this.progressBar.value = 0;
         }
     }
 

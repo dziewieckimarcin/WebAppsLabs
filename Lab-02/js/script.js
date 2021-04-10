@@ -159,6 +159,11 @@ var SingleTrack = /** @class */ (function () {
                 this.elementsPlayIndex = 0;
                 this.isPlaying = true;
                 this.setTimer();
+                this.setProgressBarInterval();
+                var max_1 = 0;
+                this.elements.forEach(function (x) { return max_1 += x.delay; });
+                this.progressBar.value = 0;
+                this.progressBar.max = max_1;
             }
             else {
                 this.togglePlayTrack();
@@ -166,11 +171,14 @@ var SingleTrack = /** @class */ (function () {
         }
         else {
             clearTimeout(this.soundTimer);
+            clearInterval(this.progressBarInterval);
+            this.progressBar.value = 0;
         }
     };
     SingleTrack.prototype.playSoundFromTrack = function () {
         clearTimeout(this.soundTimer);
         this.sounds.playSound(this.elements[this.elementsPlayIndex].type);
+        //this.progressBar.value += this.elements[this.elementsPlayIndex].delay;
         this.elementsPlayIndex++;
         if (this.elementsPlayIndex < this.elements.length) {
             this.setTimer();
@@ -182,6 +190,13 @@ var SingleTrack = /** @class */ (function () {
     SingleTrack.prototype.setTimer = function () {
         var _this = this;
         this.soundTimer = setTimeout(function () { return _this.playSoundFromTrack(); }, this.elements[this.elementsPlayIndex].delay);
+    };
+    SingleTrack.prototype.setProgressBarInterval = function () {
+        var _this = this;
+        this.progressBarInterval = setInterval(function () { return _this.changeProgressBarValue(); }, 10);
+    };
+    SingleTrack.prototype.changeProgressBarValue = function () {
+        this.progressBar.value += 10;
     };
     SingleTrack.prototype.startRecordingWithBackground = function () {
         this.playAllEvent();
@@ -284,6 +299,10 @@ var SingleTrack = /** @class */ (function () {
         this.setRecordButtonsStyle();
         if (this.isRecording) {
             this.startRecording();
+            this.progressBar.removeAttribute("value");
+        }
+        else {
+            this.progressBar.value = 0;
         }
     };
     SingleTrack.prototype.setRecordButtonsStyle = function () {
@@ -309,9 +328,11 @@ var SingleTrack = /** @class */ (function () {
         this.setRecordWithBackgroundButtonsStyle();
         if (this.isRecordingWithBackground) {
             this.startRecordingWithBackground();
+            this.progressBar.removeAttribute("value");
         }
         else {
             this.stopAllEvent();
+            this.progressBar.value = 0;
         }
     };
     SingleTrack.prototype.setRecordWithBackgroundButtonsStyle = function () {
