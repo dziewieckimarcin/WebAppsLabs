@@ -128,16 +128,64 @@ var SingleTrack = /** @class */ (function () {
         this.isRecordingWithBackground = false;
         this.isPlaying = false;
         this.elements = [];
+        this.sounds = new Sounds();
         this.create(document.getElementById("tracks-section"));
         this.setButtonDefaults();
         this.addButtonListeners();
     }
+    SingleTrack.prototype.checkIsPlaying = function () {
+        return this.isPlaying;
+    };
     SingleTrack.prototype.addTrackElement = function (sound) {
         if (this.isRecording || this.isRecordingWithBackground) {
             var timeNow = performance.now();
             this.elements.push(new TrackElement(sound, timeNow - this.timeVector));
             this.timeVector = timeNow;
         }
+    };
+    SingleTrack.prototype.playTrack = function () {
+        if (this.isOn && !this.isRecording && !this.isRecordingWithBackground) {
+            this.togglePlayTrack();
+        }
+    };
+    SingleTrack.prototype.stopPlay = function () {
+        if (this.isPlaying) {
+            this.togglePlayTrack();
+        }
+    };
+    SingleTrack.prototype.startStopPlayingTrack = function () {
+        if (this.isPlaying) {
+            if (this.elements.length > 0) {
+                this.elementsPlayIndex = 0;
+                this.isPlaying = true;
+                this.setTimer();
+            }
+            else {
+                this.togglePlayTrack();
+            }
+        }
+        else {
+            clearTimeout(this.soundTimer);
+        }
+    };
+    SingleTrack.prototype.playSoundFromTrack = function () {
+        clearTimeout(this.soundTimer);
+        this.sounds.playSound(this.elements[this.elementsPlayIndex].type);
+        this.elementsPlayIndex++;
+        if (this.elementsPlayIndex < this.elements.length) {
+            this.setTimer();
+        }
+        else {
+            this.togglePlayTrack();
+        }
+    };
+    SingleTrack.prototype.setTimer = function () {
+        var _this = this;
+        this.soundTimer = setTimeout(function () { return _this.playSoundFromTrack(); }, this.elements[this.elementsPlayIndex].delay);
+    };
+    SingleTrack.prototype.startRecordingWithBackground = function () {
+        this.playAllEvent();
+        this.startRecording();
     };
     SingleTrack.prototype.startRecording = function () {
         this.elements = [];
@@ -234,10 +282,9 @@ var SingleTrack = /** @class */ (function () {
     SingleTrack.prototype.toggleRecord = function () {
         this.isRecording = !this.isRecording;
         this.setRecordButtonsStyle();
-        if (this.isRecording)
+        if (this.isRecording) {
             this.startRecording();
-        else
-            console.log(this.elements);
+        }
     };
     SingleTrack.prototype.setRecordButtonsStyle = function () {
         if (this.isRecording) {
@@ -260,6 +307,12 @@ var SingleTrack = /** @class */ (function () {
     SingleTrack.prototype.toggleRecordWithBackground = function () {
         this.isRecordingWithBackground = !this.isRecordingWithBackground;
         this.setRecordWithBackgroundButtonsStyle();
+        if (this.isRecordingWithBackground) {
+            this.startRecordingWithBackground();
+        }
+        else {
+            this.stopAllEvent();
+        }
     };
     SingleTrack.prototype.setRecordWithBackgroundButtonsStyle = function () {
         if (this.isRecordingWithBackground) {
@@ -282,6 +335,7 @@ var SingleTrack = /** @class */ (function () {
     SingleTrack.prototype.togglePlayTrack = function () {
         this.isPlaying = !this.isPlaying;
         this.setPlayTrackButtonsStyle();
+        this.startStopPlayingTrack();
     };
     SingleTrack.prototype.setPlayTrackButtonsStyle = function () {
         if (this.isPlaying) {
@@ -311,11 +365,39 @@ var AllTracks = /** @class */ (function () {
         this.addTrack();
     }
     AllTracks.prototype.addTrack = function () {
-        this.tracksColection.push(new SingleTrack());
+        var _this = this;
+        var track = new SingleTrack();
+        track.playAllEvent = function () { return _this.playAll(); };
+        track.stopAllEvent = function () { return _this.stopAll(); };
+        this.tracksColection.push(track);
     };
     AllTracks.prototype.recordDrum = function (soundType) {
         this.tracksColection.forEach(function (element) {
             element.addTrackElement(soundType);
+        });
+    };
+    AllTracks.prototype.toggleAll = function () {
+        var flag = false;
+        this.tracksColection.forEach(function (element) {
+            if (element.checkIsPlaying()) {
+                flag = true;
+            }
+        });
+        if (flag) {
+            this.stopAll();
+        }
+        else {
+            this.playAll();
+        }
+    };
+    AllTracks.prototype.playAll = function () {
+        this.tracksColection.forEach(function (element) {
+            element.playTrack();
+        });
+    };
+    AllTracks.prototype.stopAll = function () {
+        this.tracksColection.forEach(function (element) {
+            element.stopPlay();
         });
     };
     return AllTracks;
@@ -328,6 +410,8 @@ var Main = /** @class */ (function () {
         this.drums = new Drums();
         var addButton = document.getElementById("addTrackId");
         addButton.addEventListener('click', function () { return _this.addTrack(); });
+        var playAllButton = document.getElementById("playTracksId");
+        playAllButton.addEventListener('click', function () { return _this.playAllTracks(); });
         this.drums.onDrumEvent = function (e) { return _this.recordDrum(e); };
     }
     Main.prototype.addTrack = function () {
@@ -335,6 +419,9 @@ var Main = /** @class */ (function () {
     };
     Main.prototype.recordDrum = function (soundType) {
         this.allTracks.recordDrum(soundType);
+    };
+    Main.prototype.playAllTracks = function () {
+        this.allTracks.toggleAll();
     };
     return Main;
 }());

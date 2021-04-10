@@ -9,6 +9,9 @@ class Main{
         let addButton = document.getElementById("addTrackId");
         addButton.addEventListener('click', () => this.addTrack());
 
+        let playAllButton = document.getElementById("playTracksId");
+        playAllButton.addEventListener('click', () => this.playAllTracks());
+
         this.drums.onDrumEvent = (e) => this.recordDrum(e)
     }
 
@@ -18,6 +21,10 @@ class Main{
 
     private recordDrum(soundType: SoundTypeEnum){
         this.allTracks.recordDrum(soundType);
+    }
+
+    private playAllTracks(){
+        this.allTracks.toggleAll();
     }
 
 }

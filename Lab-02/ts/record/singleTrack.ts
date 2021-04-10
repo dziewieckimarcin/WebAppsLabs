@@ -4,6 +4,9 @@
 
 class SingleTrack{
 
+    public playAllEvent: () => void;
+    public stopAllEvent: () => void;
+
     private currentElement: HTMLElement;
     private onOffButton: HTMLButtonElement;
     private playTrackButton: HTMLButtonElement;
@@ -19,13 +22,19 @@ class SingleTrack{
 
     private elements: TrackElement[] = [];
     private timeVector: number;
+    private elementsPlayIndex: number;
+    private soundTimer;
 
-    private sounds: Sounds
+    private sounds: Sounds = new Sounds();
 
     constructor(){
         this.create(document.getElementById("tracks-section"));
         this.setButtonDefaults();
         this.addButtonListeners();
+    }
+
+    public checkIsPlaying(): boolean{
+        return this.isPlaying;
     }
 
     public addTrackElement(sound: SoundTypeEnum){
@@ -34,6 +43,57 @@ class SingleTrack{
             this.elements.push(new TrackElement(sound, timeNow - this.timeVector));
             this.timeVector = timeNow;
         }
+    }
+
+    public playTrack(){
+        if (this.isOn && !this.isRecording && !this.isRecordingWithBackground){
+            this.togglePlayTrack();
+        }
+    }
+
+    public stopPlay(){
+        if (this.isPlaying){
+            this.togglePlayTrack();
+        }
+    }
+
+    private startStopPlayingTrack(){
+        if (this.isPlaying){
+            if (this.elements.length > 0){
+                this.elementsPlayIndex = 0;
+                this.isPlaying = true;
+                this.setTimer();
+            }
+            else{
+                this.togglePlayTrack();
+            }
+        }
+        else{
+            clearTimeout(this.soundTimer);
+        }
+    }
+
+    private playSoundFromTrack(){
+        clearTimeout(this.soundTimer);
+        this.sounds.playSound(this.elements[this.elementsPlayIndex].type);
+        this.elementsPlayIndex++;
+
+        if (this.elementsPlayIndex < this.elements.length){
+            this.setTimer();
+        }
+        else{
+            this.togglePlayTrack();
+        }
+    }
+
+    private setTimer(){
+        this.soundTimer = setTimeout(() => this.playSoundFromTrack(), this.elements[this.elementsPlayIndex].delay);
+    }
+    
+
+    private startRecordingWithBackground(){
+        this.playAllEvent();
+        this.startRecording();
     }
 
     private startRecording(){
@@ -157,11 +217,9 @@ class SingleTrack{
         this.isRecording = !this.isRecording;
         this.setRecordButtonsStyle();
 
-        if (this.isRecording)
+        if (this.isRecording){
             this.startRecording();
-        else
-            console.log(this.elements);
-
+        }
     }
 
     private setRecordButtonsStyle(){
@@ -188,6 +246,13 @@ class SingleTrack{
     private toggleRecordWithBackground(){
         this.isRecordingWithBackground = !this.isRecordingWithBackground;
         this.setRecordWithBackgroundButtonsStyle();
+
+        if (this.isRecordingWithBackground){
+            this.startRecordingWithBackground();
+        }
+        else{
+            this.stopAllEvent();
+        }
     }
 
     private setRecordWithBackgroundButtonsStyle(){
@@ -215,6 +280,7 @@ class SingleTrack{
     private togglePlayTrack(){
         this.isPlaying = !this.isPlaying;
         this.setPlayTrackButtonsStyle();
+        this.startStopPlayingTrack();
     }
 
     private setPlayTrackButtonsStyle(){

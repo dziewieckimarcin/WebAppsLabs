@@ -10,12 +10,46 @@ class AllTracks{
     }
 
     public addTrack(){
-        this.tracksColection.push(new SingleTrack());
+        let track = new SingleTrack();
+        track.playAllEvent = () => this.playAll();
+        track.stopAllEvent = () => this.stopAll();
+        this.tracksColection.push(track);
+
     }
 
     public recordDrum(soundType: SoundTypeEnum){
         this.tracksColection.forEach(element => {
             element.addTrackElement(soundType);
+        });
+    }
+
+
+
+    public toggleAll(){
+        let flag = false;
+        this.tracksColection.forEach((element) => {
+            if (element.checkIsPlaying()){
+                flag = true;
+            }
+        });
+
+        if (flag){
+            this.stopAll();
+        }
+        else{
+            this.playAll();
+        }
+    }
+
+    private playAll(){
+        this.tracksColection.forEach((element) => {
+            element.playTrack();
+        });
+    }
+
+    private stopAll(){
+        this.tracksColection.forEach((element) => {
+            element.stopPlay();
         });
     }
 }
