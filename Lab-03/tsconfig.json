@@ -1,6 +1,12 @@
 {
     "compilerOptions": {
         "outFile": "./js/script.js",
+        "lib": [
+            "dom",
+            "es5",
+            "es6"
+            ],
+        "target": "es5",
       },
 
     "include": [
