@@ -3,6 +3,7 @@
 class CityWeather{
 
     private cityName: string;
+    private weatherIcon: string;
     private weather: string;
     private temperature: number;
     private pressure: number;
@@ -10,6 +11,7 @@ class CityWeather{
 
     private mainElement : HTMLElement;
     private cityNameElement : HTMLElement;
+    private imgElement: HTMLImageElement;
     private descriptionElement : HTMLElement;
     private temperatureElement : HTMLElement;
     private pressureElement : HTMLElement;
@@ -30,6 +32,7 @@ class CityWeather{
         this.temperatureElement.innerText = this.temperature.toFixed(0).toString();
         this.pressureElement.innerText = this.pressure.toFixed(0).toString();
         this.humidityElement.innerText = this.humidity.toFixed(0).toString();
+        this.imgElement.src = `./images/${this.weatherIcon}.png`;
     }
 
     refreshData(weatherData: WeatherApiResponse){
@@ -38,6 +41,7 @@ class CityWeather{
 
     private setValues(weatherData: WeatherApiResponse) {
         this.cityName = weatherData.name;
+        this.weatherIcon = weatherData.weather[0].icon;
         this.weather = weatherData.weather[0].description.charAt(0).toUpperCase() + weatherData.weather[0].description.slice(1);
         this.temperature = weatherData.main.temp;
         this.pressure = weatherData.main.pressure;
@@ -142,8 +146,24 @@ class CityWeather{
 
     private createCardContent(cardElement: HTMLDivElement) {
         let cardContent = document.createElement("div");
-        cardContent.className = "card-content";
+        cardContent.className = "card-content pt-2";
         cardElement.appendChild(cardContent);
+
+        let container = document.createElement("div");
+        container.className = "container";
+        cardContent.appendChild(container);
+
+        let imgColumns = document.createElement("div");
+        imgColumns.className = "columns is-centered";
+        container.appendChild(imgColumns);
+
+        let imgColumn = document.createElement("div");
+        imgColumn.className = "column is-narrow p-0";
+        imgColumns.appendChild(imgColumn);
+
+        this.imgElement = document.createElement("img");
+        this.imgElement.className = "image is-128x128";
+        imgColumn.appendChild(this.imgElement);
 
         this.descriptionElement = document.createElement("div");
         this.descriptionElement.className = "subtitle has-text-centered";

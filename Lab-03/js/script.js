@@ -48,12 +48,14 @@ var CityWeather = /** @class */ (function () {
         this.temperatureElement.innerText = this.temperature.toFixed(0).toString();
         this.pressureElement.innerText = this.pressure.toFixed(0).toString();
         this.humidityElement.innerText = this.humidity.toFixed(0).toString();
+        this.imgElement.src = "./images/" + this.weatherIcon + ".png";
     };
     CityWeather.prototype.refreshData = function (weatherData) {
         this.setValues(weatherData);
     };
     CityWeather.prototype.setValues = function (weatherData) {
         this.cityName = weatherData.name;
+        this.weatherIcon = weatherData.weather[0].icon;
         this.weather = weatherData.weather[0].description.charAt(0).toUpperCase() + weatherData.weather[0].description.slice(1);
         this.temperature = weatherData.main.temp;
         this.pressure = weatherData.main.pressure;
@@ -134,8 +136,20 @@ var CityWeather = /** @class */ (function () {
     };
     CityWeather.prototype.createCardContent = function (cardElement) {
         var cardContent = document.createElement("div");
-        cardContent.className = "card-content";
+        cardContent.className = "card-content pt-2";
         cardElement.appendChild(cardContent);
+        var container = document.createElement("div");
+        container.className = "container";
+        cardContent.appendChild(container);
+        var imgColumns = document.createElement("div");
+        imgColumns.className = "columns is-centered";
+        container.appendChild(imgColumns);
+        var imgColumn = document.createElement("div");
+        imgColumn.className = "column is-narrow p-0";
+        imgColumns.appendChild(imgColumn);
+        this.imgElement = document.createElement("img");
+        this.imgElement.className = "image is-128x128";
+        imgColumn.appendChild(this.imgElement);
         this.descriptionElement = document.createElement("div");
         this.descriptionElement.className = "subtitle has-text-centered";
         cardContent.appendChild(this.descriptionElement);
@@ -284,7 +298,6 @@ var WeatherApi = /** @class */ (function () {
                         return [4 /*yield*/, response.json()];
                     case 2:
                         jsonResponse = (_a.sent());
-                        console.log(jsonResponse);
                         return [2 /*return*/, jsonResponse];
                     case 3:
                         console.log("fetch data error");

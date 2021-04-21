@@ -14,7 +14,6 @@ class WeatherApi{
 
         if (response.ok){
             let jsonResponse = (await response.json()) as WeatherApiResponse;
-            console.log(jsonResponse);
             return jsonResponse;
         }
         else{
