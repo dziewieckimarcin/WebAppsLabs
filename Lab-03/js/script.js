@@ -36,21 +36,132 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 /// <reference path='weatherApiResponse.ts'/>
 var CityWeather = /** @class */ (function () {
-    function CityWeather(weatherData) {
+    function CityWeather(weatherData, parentElement, deleteCallback) {
+        this.deleteCallback = deleteCallback;
         this.setValues(weatherData);
+        this.createHtmlElements(parentElement);
+        this.updateValuesOnHtmlElements();
     }
+    CityWeather.prototype.updateValuesOnHtmlElements = function () {
+        this.cityNameElement.innerText = this.cityName;
+        this.descriptionElement.innerText = this.weather;
+        this.temperatureElement.innerText = this.temperature.toFixed(0).toString();
+        this.pressureElement.innerText = this.pressure.toFixed(0).toString();
+        this.humidityElement.innerText = this.humidity.toFixed(0).toString();
+    };
     CityWeather.prototype.refreshData = function (weatherData) {
         this.setValues(weatherData);
     };
     CityWeather.prototype.setValues = function (weatherData) {
         this.cityName = weatherData.name;
-        this.weather = weatherData.weather[0].description.toUpperCase();
+        this.weather = weatherData.weather[0].description.charAt(0).toUpperCase() + weatherData.weather[0].description.slice(1);
         this.temperature = weatherData.main.temp;
         this.pressure = weatherData.main.pressure;
         this.humidity = weatherData.main.humidity;
     };
     CityWeather.prototype.getCityName = function () {
         return this.cityName;
+    };
+    CityWeather.prototype.createHtmlElements = function (parentElement) {
+        this.mainElement = document.createElement("div");
+        this.mainElement.className = "column is-half-tablet is-two-fifths-desktop is-one-third-widescreen";
+        var cardElement = document.createElement("div");
+        cardElement.className = "card";
+        this.mainElement.appendChild(cardElement);
+        this.createCardHeader(cardElement);
+        this.createCardContent(cardElement);
+        this.createCardFooter(cardElement);
+        parentElement.appendChild(this.mainElement);
+    };
+    CityWeather.prototype.createCardFooter = function (cardElement) {
+        var cardFooter = document.createElement("div");
+        cardFooter.className = "card-footer";
+        cardElement.appendChild(cardFooter);
+        this.createLeftFooterItem(cardFooter);
+        this.createRightFooterItem(cardFooter);
+    };
+    CityWeather.prototype.createRightFooterItem = function (cardElement) {
+        var cardFooterItemRight = document.createElement("div");
+        cardFooterItemRight.className = "card-footer-item is-half";
+        cardElement.appendChild(cardFooterItemRight);
+        var cardFooterItemContainer = document.createElement("div");
+        cardFooterItemContainer.className = "container";
+        cardFooterItemRight.appendChild(cardFooterItemContainer);
+        var cardFooterItemContent = document.createElement("div");
+        cardFooterItemContent.className = "content has-text-centered";
+        cardFooterItemContainer.appendChild(cardFooterItemContent);
+        this.createRightFooterPressureItem(cardFooterItemContent);
+        this.createRightFooterHumidityItem(cardFooterItemContent);
+    };
+    CityWeather.prototype.createRightFooterPressureItem = function (cardFooterItemContent) {
+        var cardFooterItemPressureText = document.createElement("div");
+        cardFooterItemPressureText.className = "py-2 px-0 has-text-weight-medium";
+        cardFooterItemContent.appendChild(cardFooterItemPressureText);
+        var pressurePrefix = document.createElement("span");
+        pressurePrefix.innerHTML = "Ciśnienie: ";
+        cardFooterItemPressureText.appendChild(pressurePrefix);
+        this.pressureElement = document.createElement("span");
+        cardFooterItemPressureText.appendChild(this.pressureElement);
+        var pressureSufix = document.createElement("span");
+        pressureSufix.innerHTML = "&nbsp;hPa";
+        cardFooterItemPressureText.appendChild(pressureSufix);
+    };
+    CityWeather.prototype.createRightFooterHumidityItem = function (cardFooterItemContent) {
+        var cardFooterItemHumidityText = document.createElement("div");
+        cardFooterItemHumidityText.className = "py-2 px-0 has-text-weight-medium";
+        cardFooterItemContent.appendChild(cardFooterItemHumidityText);
+        var humidityPrefix = document.createElement("span");
+        humidityPrefix.innerHTML = "Wilgotność: ";
+        cardFooterItemHumidityText.appendChild(humidityPrefix);
+        this.humidityElement = document.createElement("span");
+        cardFooterItemHumidityText.appendChild(this.humidityElement);
+        var humiditySufix = document.createElement("span");
+        humiditySufix.innerHTML = "%";
+        cardFooterItemHumidityText.appendChild(humiditySufix);
+    };
+    CityWeather.prototype.createLeftFooterItem = function (cardElement) {
+        var cardFooterItemLeft = document.createElement("div");
+        cardFooterItemLeft.className = "card-footer-item is-half is-flex is-justify-content-center is-align-items-center";
+        cardElement.appendChild(cardFooterItemLeft);
+        var cardFooterItemLeftText = document.createElement("div");
+        cardFooterItemLeftText.className = "is-size-3";
+        cardFooterItemLeft.appendChild(cardFooterItemLeftText);
+        this.temperatureElement = document.createElement("span");
+        cardFooterItemLeftText.appendChild(this.temperatureElement);
+        var temperatureSufix = document.createElement("span");
+        temperatureSufix.innerHTML = "&nbsp;&deg;C";
+        cardFooterItemLeftText.appendChild(temperatureSufix);
+    };
+    CityWeather.prototype.createCardContent = function (cardElement) {
+        var cardContent = document.createElement("div");
+        cardContent.className = "card-content";
+        cardElement.appendChild(cardContent);
+        this.descriptionElement = document.createElement("div");
+        this.descriptionElement.className = "subtitle has-text-centered";
+        cardContent.appendChild(this.descriptionElement);
+    };
+    CityWeather.prototype.createCardHeader = function (cardElement) {
+        var _this = this;
+        var cardHeader = document.createElement("div");
+        cardHeader.className = "card-header";
+        cardElement.appendChild(cardHeader);
+        var cardHeaderTitle = document.createElement("div");
+        cardHeaderTitle.className = "card-header-title";
+        cardHeader.appendChild(cardHeaderTitle);
+        this.cityNameElement = document.createElement("div");
+        this.cityNameElement.className = "container has-text-centered";
+        cardHeaderTitle.appendChild(this.cityNameElement);
+        var cardHeaderClose = document.createElement("div");
+        cardHeaderClose.className = "p-3";
+        cardHeader.appendChild(cardHeaderClose);
+        var cardHeaderCloseButton = document.createElement("button");
+        cardHeaderCloseButton.className = "has-background-info delete is-medium";
+        cardHeaderCloseButton.addEventListener("click", function () { return _this.delete(); });
+        cardHeaderClose.appendChild(cardHeaderCloseButton);
+    };
+    CityWeather.prototype.delete = function () {
+        this.deleteCallback(this);
+        this.mainElement.parentElement.removeChild(this.mainElement);
     };
     return CityWeather;
 }());
@@ -61,6 +172,7 @@ var AllWeathers = /** @class */ (function () {
         this.weatherApi = new WeatherApi();
         this.weathersCollection = [];
         this.refreshTime = 600000;
+        this.allWeathersSectionElement = document.getElementById("all-weathers-section");
         this.refreshInterval = setInterval(function () { return _this.refreshAllWeathers(); }, this.refreshTime);
     }
     AllWeathers.prototype.refreshAllWeathers = function () {
@@ -87,6 +199,7 @@ var AllWeathers = /** @class */ (function () {
     AllWeathers.prototype.addCityWeather = function (cityName) {
         return __awaiter(this, void 0, void 0, function () {
             var weather, cityWeather;
+            var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -95,7 +208,7 @@ var AllWeathers = /** @class */ (function () {
                     case 1:
                         weather = _a.sent();
                         if (!this.checkCityExistInCollection(weather.name)) {
-                            cityWeather = new CityWeather(weather);
+                            cityWeather = new CityWeather(weather, this.allWeathersSectionElement, function (ob) { return _this.removeWeatherFromCollection(ob); });
                             this.weathersCollection.push(cityWeather);
                         }
                         else {
@@ -114,6 +227,9 @@ var AllWeathers = /** @class */ (function () {
                 cityExist = true;
         });
         return cityExist;
+    };
+    AllWeathers.prototype.removeWeatherFromCollection = function (ob) {
+        this.weathersCollection = this.weathersCollection.filter(function (x) { return x != ob; });
     };
     return AllWeathers;
 }());

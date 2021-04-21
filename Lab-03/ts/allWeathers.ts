@@ -6,9 +6,12 @@ class AllWeathers{
     private weatherApi = new WeatherApi();
     private weathersCollection : CityWeather[] = [];
     private refreshInterval;
-    private refreshTime = 600000;
+    private refreshTime = 120000;
+
+    private allWeathersSectionElement: HTMLElement;
 
     constructor(){
+        this.allWeathersSectionElement = document.getElementById("all-weathers-section");
         this.refreshInterval = setInterval(() => this.refreshAllWeathers(), this.refreshTime)
     }
 
@@ -26,7 +29,7 @@ class AllWeathers{
         if (!this.checkCityExistInCollection(cityName)){
             let weather = await this.weatherApi.getWeatherByCity(cityName);
             if (!this.checkCityExistInCollection(weather.name)){
-                let cityWeather = new CityWeather(weather);
+                let cityWeather = new CityWeather(weather, this.allWeathersSectionElement, (ob) => this.removeWeatherFromCollection(ob));
                 this.weathersCollection.push(cityWeather);
             }
             else{
@@ -45,5 +48,9 @@ class AllWeathers{
                 cityExist = true;
         });
         return cityExist;
+    }
+
+    public removeWeatherFromCollection(ob: CityWeather){
+        this.weathersCollection = this.weathersCollection.filter(x => x != ob);
     }
 }
