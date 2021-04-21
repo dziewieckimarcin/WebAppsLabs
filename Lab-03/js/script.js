@@ -171,7 +171,7 @@ var AllWeathers = /** @class */ (function () {
         var _this = this;
         this.weatherApi = new WeatherApi();
         this.weathersCollection = [];
-        this.refreshTime = 600000;
+        this.refreshTime = 120000;
         this.allWeathersSectionElement = document.getElementById("all-weathers-section");
         this.refreshInterval = setInterval(function () { return _this.refreshAllWeathers(); }, this.refreshTime);
     }
@@ -203,19 +203,34 @@ var AllWeathers = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        if (cityName.trim().length == 0) {
+                            // show notification that field is empty
+                            console.log("wpisz miasto");
+                            return [2 /*return*/];
+                        }
                         if (!!this.checkCityExistInCollection(cityName)) return [3 /*break*/, 2];
                         return [4 /*yield*/, this.weatherApi.getWeatherByCity(cityName)];
                     case 1:
                         weather = _a.sent();
+                        if (weather == null) {
+                            // show notification that city not exist
+                            console.log("nie znaleziono miasta");
+                            return [2 /*return*/];
+                        }
                         if (!this.checkCityExistInCollection(weather.name)) {
                             cityWeather = new CityWeather(weather, this.allWeathersSectionElement, function (ob) { return _this.removeWeatherFromCollection(ob); });
                             this.weathersCollection.push(cityWeather);
                         }
                         else {
                             // Show notification that city already shown
+                            console.log("duplikat miasta");
                         }
-                        return [3 /*break*/, 2];
-                    case 2: return [2 /*return*/];
+                        return [3 /*break*/, 3];
+                    case 2:
+                        // Show notification that city already shown
+                        console.log("misto jest już na liście");
+                        _a.label = 3;
+                    case 3: return [2 /*return*/];
                 }
             });
         });
@@ -223,7 +238,7 @@ var AllWeathers = /** @class */ (function () {
     AllWeathers.prototype.checkCityExistInCollection = function (cityName) {
         var cityExist = false;
         this.weathersCollection.forEach(function (x) {
-            if (x.getCityName() == cityName)
+            if (x.getCityName().toLowerCase() == cityName.toLowerCase())
                 cityExist = true;
         });
         return cityExist;
@@ -251,11 +266,15 @@ var WeatherApi = /** @class */ (function () {
                         return [4 /*yield*/, fetch(validUrl)];
                     case 1:
                         response = _a.sent();
+                        if (!response.ok) return [3 /*break*/, 3];
                         return [4 /*yield*/, response.json()];
                     case 2:
                         jsonResponse = (_a.sent());
                         console.log(jsonResponse);
                         return [2 /*return*/, jsonResponse];
+                    case 3:
+                        console.log("fetch data error");
+                        return [2 /*return*/, null];
                 }
             });
         });

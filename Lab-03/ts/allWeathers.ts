@@ -25,9 +25,18 @@ class AllWeathers{
     }
 
     async addCityWeather(cityName: string){
-        
+        if (cityName.trim().length == 0){
+            // show notification that field is empty
+            return;
+        }
+
         if (!this.checkCityExistInCollection(cityName)){
             let weather = await this.weatherApi.getWeatherByCity(cityName);
+            if (weather == null){
+                // show notification that city not exist
+                return;
+            }
+
             if (!this.checkCityExistInCollection(weather.name)){
                 let cityWeather = new CityWeather(weather, this.allWeathersSectionElement, (ob) => this.removeWeatherFromCollection(ob));
                 this.weathersCollection.push(cityWeather);
@@ -44,13 +53,13 @@ class AllWeathers{
     private checkCityExistInCollection(cityName: string) {
         let cityExist = false;
         this.weathersCollection.forEach((x) => {
-            if (x.getCityName() == cityName)
+            if (x.getCityName().toLowerCase() == cityName.toLowerCase())
                 cityExist = true;
         });
         return cityExist;
     }
 
-    public removeWeatherFromCollection(ob: CityWeather){
+    private removeWeatherFromCollection(ob: CityWeather){
         this.weathersCollection = this.weathersCollection.filter(x => x != ob);
     }
 }

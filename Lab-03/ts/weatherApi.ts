@@ -11,10 +11,17 @@ class WeatherApi{
         let validUrl = this.url.replace(this.cityKey, city).replace(this.apiKey, this.apiKeyValue);
 
         let response = await fetch(validUrl);
-        let jsonResponse = (await response.json()) as WeatherApiResponse;
 
-        console.log(jsonResponse);
-        return jsonResponse;
+        if (response.ok){
+            let jsonResponse = (await response.json()) as WeatherApiResponse;
+            console.log(jsonResponse);
+            return jsonResponse;
+        }
+        else{
+            console.log("fetch data error");
+            return null;
+        }
+        
     }
 
 }
