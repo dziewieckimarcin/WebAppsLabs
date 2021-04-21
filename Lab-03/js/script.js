@@ -174,6 +174,7 @@ var AllWeathers = /** @class */ (function () {
         this.refreshTime = 120000;
         this.allWeathersSectionElement = document.getElementById("all-weathers-section");
         this.refreshInterval = setInterval(function () { return _this.refreshAllWeathers(); }, this.refreshTime);
+        this.loadDataFromStorage();
     }
     AllWeathers.prototype.refreshAllWeathers = function () {
         return __awaiter(this, void 0, void 0, function () {
@@ -205,7 +206,6 @@ var AllWeathers = /** @class */ (function () {
                     case 0:
                         if (cityName.trim().length == 0) {
                             // show notification that field is empty
-                            console.log("wpisz miasto");
                             return [2 /*return*/];
                         }
                         if (!!this.checkCityExistInCollection(cityName)) return [3 /*break*/, 2];
@@ -214,23 +214,18 @@ var AllWeathers = /** @class */ (function () {
                         weather = _a.sent();
                         if (weather == null) {
                             // show notification that city not exist
-                            console.log("nie znaleziono miasta");
                             return [2 /*return*/];
                         }
                         if (!this.checkCityExistInCollection(weather.name)) {
                             cityWeather = new CityWeather(weather, this.allWeathersSectionElement, function (ob) { return _this.removeWeatherFromCollection(ob); });
                             this.weathersCollection.push(cityWeather);
+                            this.saveDataToStorage();
                         }
                         else {
                             // Show notification that city already shown
-                            console.log("duplikat miasta");
                         }
-                        return [3 /*break*/, 3];
-                    case 2:
-                        // Show notification that city already shown
-                        console.log("misto jest już na liście");
-                        _a.label = 3;
-                    case 3: return [2 /*return*/];
+                        return [3 /*break*/, 2];
+                    case 2: return [2 /*return*/];
                 }
             });
         });
@@ -245,6 +240,25 @@ var AllWeathers = /** @class */ (function () {
     };
     AllWeathers.prototype.removeWeatherFromCollection = function (ob) {
         this.weathersCollection = this.weathersCollection.filter(function (x) { return x != ob; });
+        this.saveDataToStorage();
+    };
+    AllWeathers.prototype.saveDataToStorage = function () {
+        var cities = [];
+        this.weathersCollection.forEach(function (x) { return cities.push(x.getCityName()); });
+        localStorage.setItem("cities", JSON.stringify(cities));
+    };
+    AllWeathers.prototype.loadDataFromStorage = function () {
+        var _this = this;
+        var data = localStorage.getItem("cities");
+        if (data) {
+            var cities = JSON.parse(data);
+            cities.forEach(function (x) { return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.addCityWeather(x)];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
+            }); }); });
+        }
     };
     return AllWeathers;
 }());

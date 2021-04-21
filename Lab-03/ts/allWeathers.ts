@@ -12,7 +12,8 @@ class AllWeathers{
 
     constructor(){
         this.allWeathersSectionElement = document.getElementById("all-weathers-section");
-        this.refreshInterval = setInterval(() => this.refreshAllWeathers(), this.refreshTime)
+        this.refreshInterval = setInterval(() => this.refreshAllWeathers(), this.refreshTime);
+        this.loadDataFromStorage();
     }
 
     async refreshAllWeathers(){
@@ -40,6 +41,7 @@ class AllWeathers{
             if (!this.checkCityExistInCollection(weather.name)){
                 let cityWeather = new CityWeather(weather, this.allWeathersSectionElement, (ob) => this.removeWeatherFromCollection(ob));
                 this.weathersCollection.push(cityWeather);
+                this.saveDataToStorage();
             }
             else{
                 // Show notification that city already shown
@@ -61,5 +63,20 @@ class AllWeathers{
 
     private removeWeatherFromCollection(ob: CityWeather){
         this.weathersCollection = this.weathersCollection.filter(x => x != ob);
+        this.saveDataToStorage();
+    }
+
+    private saveDataToStorage(){
+        let cities : string[] = [];
+        this.weathersCollection.forEach(x => cities.push(x.getCityName()));
+        localStorage.setItem("cities", JSON.stringify(cities));
+    }
+
+    private loadDataFromStorage(){
+        let data = localStorage.getItem("cities");
+        if (data){
+            let cities = JSON.parse(data) as string[];
+            cities.forEach(async x => await this.addCityWeather(x) );
+        }
     }
 }
