@@ -8,6 +8,7 @@ class CityWeather{
     private temperature: number;
     private pressure: number;
     private humidity: number;
+    private cords: Coord;
 
     private mainElement : HTMLElement;
     private cityNameElement : HTMLElement;
@@ -16,11 +17,14 @@ class CityWeather{
     private temperatureElement : HTMLElement;
     private pressureElement : HTMLElement;
     private humidityElement : HTMLElement;
+    private forecastButtonElement : HTMLButtonElement;
 
     private deleteCallback: (ob: CityWeather) => void;
+    private forecastCallback: (cityName: string, cords: Coord) => void;
 
-    constructor(weatherData: WeatherApiResponse, parentElement: HTMLElement, deleteCallback: (ob: CityWeather) => void){
-        this.deleteCallback = deleteCallback
+    constructor(weatherData: WeatherApiResponse, parentElement: HTMLElement, deleteCallback: (ob: CityWeather) => void, forecastCallback: (cityName: string, cords: Coord) => void){
+        this.deleteCallback = deleteCallback;
+        this.forecastCallback = forecastCallback;
         this.setValues(weatherData);
         this.createHtmlElements(parentElement);
         this.updateValuesOnHtmlElements();
@@ -46,6 +50,7 @@ class CityWeather{
         this.temperature = weatherData.main.temp;
         this.pressure = weatherData.main.pressure;
         this.humidity = weatherData.main.humidity;
+        this.cords = weatherData.coord;
     }
 
     getCityName():string{
@@ -63,8 +68,37 @@ class CityWeather{
         this.createCardHeader(cardElement);
         this.createCardContent(cardElement);
         this.createCardFooter(cardElement);
+        this.createForecastCardFooter(cardElement);
 
         parentElement.appendChild(this.mainElement);
+    }
+
+    private createForecastCardFooter(cardElement: HTMLDivElement) {
+        let cardFooter = document.createElement("div");
+        cardFooter.className = "card-footer";
+        cardElement.appendChild(cardFooter);
+
+        this.createForecastFooterItem(cardFooter);
+    }
+
+    private createForecastFooterItem(cardElement: HTMLDivElement) {
+        let forecastCardFooterItem = document.createElement("div");
+        forecastCardFooterItem.className = "card-footer-item is-half";
+        cardElement.appendChild(forecastCardFooterItem);
+
+        let cardFooterItemContainer = document.createElement("div");
+        cardFooterItemContainer.className = "container";
+        forecastCardFooterItem.appendChild(cardFooterItemContainer);
+
+        let cardFooterItemContent = document.createElement("div");
+        cardFooterItemContent.className = "content has-text-centered";
+        cardFooterItemContainer.appendChild(cardFooterItemContent);
+
+        this.forecastButtonElement = document.createElement("button");
+        this.forecastButtonElement.className = "button is-info";
+        this.forecastButtonElement.innerText = "Prognoza 48h";
+        this.forecastButtonElement.addEventListener("click", () => this.showForecast())
+        cardFooterItemContent.appendChild(this.forecastButtonElement);
     }
 
     private createCardFooter(cardElement: HTMLDivElement) {
@@ -196,5 +230,9 @@ class CityWeather{
     private delete(){
         this.deleteCallback(this);
         this.mainElement.parentElement.removeChild(this.mainElement);
+    }
+
+    private showForecast(){
+        this.forecastCallback(this.cityName, this.cords);
     }
 }

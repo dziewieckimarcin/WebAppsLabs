@@ -10,10 +10,17 @@ class AllWeathers{
 
     private allWeathersSectionElement: HTMLElement;
 
-    constructor(){
+    private forecastCallback: (cityName: string, cords: Coord) => void;
+
+    constructor(forecastCallback: (cityName: string, cords: Coord) => void){
+        this.forecastCallback = forecastCallback;
         this.allWeathersSectionElement = document.getElementById("all-weathers-section");
         this.refreshInterval = setInterval(() => this.refreshAllWeathers(), this.refreshTime);
         this.loadDataFromStorage();
+    }
+
+    private showForecast(cityName: string, cords: Coord){
+        this.forecastCallback(cityName, cords);
     }
 
     async refreshAllWeathers(){
@@ -39,7 +46,7 @@ class AllWeathers{
             }
 
             if (!this.checkCityExistInCollection(weather.name)){
-                let cityWeather = new CityWeather(weather, this.allWeathersSectionElement, (ob) => this.removeWeatherFromCollection(ob));
+                let cityWeather = new CityWeather(weather, this.allWeathersSectionElement, (ob) => this.removeWeatherFromCollection(ob), (cityName, cords) => this.showForecast(cityName, cords));
                 this.weathersCollection.push(cityWeather);
                 this.saveDataToStorage();
             }

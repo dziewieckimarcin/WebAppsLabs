@@ -36,8 +36,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 /// <reference path='weatherApiResponse.ts'/>
 var CityWeather = /** @class */ (function () {
-    function CityWeather(weatherData, parentElement, deleteCallback) {
+    function CityWeather(weatherData, parentElement, deleteCallback, forecastCallback) {
         this.deleteCallback = deleteCallback;
+        this.forecastCallback = forecastCallback;
         this.setValues(weatherData);
         this.createHtmlElements(parentElement);
         this.updateValuesOnHtmlElements();
@@ -60,6 +61,7 @@ var CityWeather = /** @class */ (function () {
         this.temperature = weatherData.main.temp;
         this.pressure = weatherData.main.pressure;
         this.humidity = weatherData.main.humidity;
+        this.cords = weatherData.coord;
     };
     CityWeather.prototype.getCityName = function () {
         return this.cityName;
@@ -73,7 +75,31 @@ var CityWeather = /** @class */ (function () {
         this.createCardHeader(cardElement);
         this.createCardContent(cardElement);
         this.createCardFooter(cardElement);
+        this.createForecastCardFooter(cardElement);
         parentElement.appendChild(this.mainElement);
+    };
+    CityWeather.prototype.createForecastCardFooter = function (cardElement) {
+        var cardFooter = document.createElement("div");
+        cardFooter.className = "card-footer";
+        cardElement.appendChild(cardFooter);
+        this.createForecastFooterItem(cardFooter);
+    };
+    CityWeather.prototype.createForecastFooterItem = function (cardElement) {
+        var _this = this;
+        var forecastCardFooterItem = document.createElement("div");
+        forecastCardFooterItem.className = "card-footer-item is-half";
+        cardElement.appendChild(forecastCardFooterItem);
+        var cardFooterItemContainer = document.createElement("div");
+        cardFooterItemContainer.className = "container";
+        forecastCardFooterItem.appendChild(cardFooterItemContainer);
+        var cardFooterItemContent = document.createElement("div");
+        cardFooterItemContent.className = "content has-text-centered";
+        cardFooterItemContainer.appendChild(cardFooterItemContent);
+        this.forecastButtonElement = document.createElement("button");
+        this.forecastButtonElement.className = "button is-info";
+        this.forecastButtonElement.innerText = "Prognoza 48h";
+        this.forecastButtonElement.addEventListener("click", function () { return _this.showForecast(); });
+        cardFooterItemContent.appendChild(this.forecastButtonElement);
     };
     CityWeather.prototype.createCardFooter = function (cardElement) {
         var cardFooter = document.createElement("div");
@@ -177,19 +203,26 @@ var CityWeather = /** @class */ (function () {
         this.deleteCallback(this);
         this.mainElement.parentElement.removeChild(this.mainElement);
     };
+    CityWeather.prototype.showForecast = function () {
+        this.forecastCallback(this.cityName, this.cords);
+    };
     return CityWeather;
 }());
 /// <reference path='cityWeather.ts'/>
 var AllWeathers = /** @class */ (function () {
-    function AllWeathers() {
+    function AllWeathers(forecastCallback) {
         var _this = this;
         this.weatherApi = new WeatherApi();
         this.weathersCollection = [];
         this.refreshTime = 120000;
+        this.forecastCallback = forecastCallback;
         this.allWeathersSectionElement = document.getElementById("all-weathers-section");
         this.refreshInterval = setInterval(function () { return _this.refreshAllWeathers(); }, this.refreshTime);
         this.loadDataFromStorage();
     }
+    AllWeathers.prototype.showForecast = function (cityName, cords) {
+        this.forecastCallback(cityName, cords);
+    };
     AllWeathers.prototype.refreshAllWeathers = function () {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
@@ -231,7 +264,7 @@ var AllWeathers = /** @class */ (function () {
                             return [2 /*return*/];
                         }
                         if (!this.checkCityExistInCollection(weather.name)) {
-                            cityWeather = new CityWeather(weather, this.allWeathersSectionElement, function (ob) { return _this.removeWeatherFromCollection(ob); });
+                            cityWeather = new CityWeather(weather, this.allWeathersSectionElement, function (ob) { return _this.removeWeatherFromCollection(ob); }, function (cityName, cords) { return _this.showForecast(cityName, cords); });
                             this.weathersCollection.push(cityWeather);
                             this.saveDataToStorage();
                         }
@@ -277,12 +310,16 @@ var AllWeathers = /** @class */ (function () {
     return AllWeathers;
 }());
 /// <reference path='weatherApiResponse.ts'/>
+/// <reference path='forecastApiResponse.ts'/>
 var WeatherApi = /** @class */ (function () {
     function WeatherApi() {
         this.apiKeyValue = '3c9297d4bffa510f74b3d44806e88662';
-        this.url = 'http://api.openweathermap.org/data/2.5/weather?q={city name}&appid={API key}&units=metric&lang=pl';
+        this.weatherUrl = 'http://api.openweathermap.org/data/2.5/weather?q={city name}&appid={API key}&units=metric&lang=pl';
+        this.forecastUrl = 'http://api.openweathermap.org/data/2.5/onecall?lat={lat}&lon={lon}&appid={API key}&units=metric&lang=pl';
         this.cityKey = '{city name}';
         this.apiKey = '{API key}';
+        this.latKey = '{lat}';
+        this.lonKey = '{lon}';
     }
     WeatherApi.prototype.getWeatherByCity = function (city) {
         return __awaiter(this, void 0, void 0, function () {
@@ -290,7 +327,29 @@ var WeatherApi = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        validUrl = this.url.replace(this.cityKey, city).replace(this.apiKey, this.apiKeyValue);
+                        validUrl = this.weatherUrl.replace(this.cityKey, city).replace(this.apiKey, this.apiKeyValue);
+                        return [4 /*yield*/, fetch(validUrl)];
+                    case 1:
+                        response = _a.sent();
+                        if (!response.ok) return [3 /*break*/, 3];
+                        return [4 /*yield*/, response.json()];
+                    case 2:
+                        jsonResponse = (_a.sent());
+                        return [2 /*return*/, jsonResponse];
+                    case 3:
+                        console.log("fetch data error");
+                        return [2 /*return*/, null];
+                }
+            });
+        });
+    };
+    WeatherApi.prototype.getForecastByCity = function (city, cords) {
+        return __awaiter(this, void 0, void 0, function () {
+            var validUrl, response, jsonResponse;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        validUrl = this.forecastUrl.replace(this.apiKey, this.apiKeyValue).replace(this.latKey, cords.lat.toString()).replace(this.lonKey, cords.lon.toString());
                         return [4 /*yield*/, fetch(validUrl)];
                     case 1:
                         response = _a.sent();
@@ -309,17 +368,198 @@ var WeatherApi = /** @class */ (function () {
     return WeatherApi;
 }());
 /// <reference path='weatherApi.ts'/>
+var Forecast = /** @class */ (function () {
+    function Forecast() {
+        var _this = this;
+        this.weatherApi = new WeatherApi();
+        this.modalElement = document.getElementById("forecast-modal");
+        this.forecastElementsSection = document.getElementById("forecast-elements-section");
+        this.closeModalButton = document.getElementById("close-forecast-button");
+        this.closeModalButton.addEventListener('click', function () { return _this.hideForecast(); });
+        this.forecastCityNameElement = document.getElementById("forecast-city");
+    }
+    Forecast.prototype.hideForecast = function () {
+        this.modalElement.classList.remove("is-active");
+        this.forecastCityNameElement.innerText = '';
+        this.forecastElementsSection.innerHTML = '';
+    };
+    Forecast.prototype.showForecast = function (cityName, cords) {
+        return __awaiter(this, void 0, void 0, function () {
+            var forecast;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.weatherApi.getForecastByCity(cityName, cords)];
+                    case 1:
+                        forecast = _a.sent();
+                        if (forecast == null) {
+                            // show notification error
+                            return [2 /*return*/];
+                        }
+                        this.buildForecastElements(forecast.hourly);
+                        this.forecastCityNameElement.innerText = cityName;
+                        this.modalElement.classList.add("is-active");
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    Forecast.prototype.buildForecastElements = function (forecastCollection) {
+        var _this = this;
+        forecastCollection.forEach(function (x) { return _this.buildMainElement(x); });
+    };
+    Forecast.prototype.buildMainElement = function (forecast) {
+        var mainElement = document.createElement("div");
+        mainElement.className = "column p-1 is-full";
+        var subElement1 = document.createElement("div");
+        subElement1.className = "box p-3";
+        mainElement.appendChild(subElement1);
+        var subElement2 = document.createElement("div");
+        subElement2.className = "container";
+        subElement1.appendChild(subElement2);
+        var subElement3 = document.createElement("div");
+        subElement3.className = "columns is-mobile";
+        subElement2.appendChild(subElement3);
+        this.createMobileImageElement(subElement3, forecast);
+        this.createFullSizeElement(subElement3, forecast);
+        this.forecastElementsSection.appendChild(mainElement);
+    };
+    Forecast.prototype.createMobileImageElement = function (parentElement, forecast) {
+        var mainElement = document.createElement("div");
+        mainElement.className = "column is-half-mobile is-hidden-tablet is-flex is-justify-content-center is-align-items-center";
+        var subElement1 = document.createElement("figure");
+        subElement1.className = "image is-96x96 p-0";
+        mainElement.appendChild(subElement1);
+        var subElement2 = document.createElement("img");
+        subElement2.src = "./images/" + forecast.weather[0].icon + ".png";
+        subElement1.appendChild(subElement2);
+        parentElement.appendChild(mainElement);
+    };
+    Forecast.prototype.createFullSizeElement = function (parentElement, forecast) {
+        var mainElement = document.createElement("div");
+        mainElement.className = "column is-half-mobile";
+        var subElement1 = document.createElement("div");
+        subElement1.className = "container";
+        mainElement.appendChild(subElement1);
+        var subElement2 = document.createElement("div");
+        subElement2.className = "columns p-0";
+        subElement1.appendChild(subElement2);
+        this.createFullSizeImageElement(subElement2, forecast);
+        this.createTemperatureElement(subElement2, forecast);
+        this.createPressureElement(subElement2, forecast);
+        this.createHumidityElement(subElement2, forecast);
+        this.createDateTimeElement(subElement2, forecast);
+        parentElement.appendChild(mainElement);
+    };
+    Forecast.prototype.createFullSizeImageElement = function (parentElement, forecast) {
+        var mainElement = document.createElement("div");
+        mainElement.className = "column is-hidden-mobile p-0 is-1 is-flex is-justify-content-center is-align-items-center";
+        var subElement1 = document.createElement("figure");
+        subElement1.className = "image is-48x48 p-0";
+        mainElement.appendChild(subElement1);
+        var subElement2 = document.createElement("img");
+        subElement2.src = "./images/" + forecast.weather[0].icon + ".png";
+        subElement1.appendChild(subElement2);
+        parentElement.appendChild(mainElement);
+    };
+    Forecast.prototype.createTemperatureElement = function (parentElement, forecast) {
+        var mainElement = document.createElement("div");
+        mainElement.className = "column p-1 is-1 is-flex is-justify-content-center is-align-items-center";
+        var subElement1 = document.createElement("div");
+        subElement1.className = "subtitle is-6";
+        mainElement.appendChild(subElement1);
+        var subElement2 = document.createElement("span");
+        subElement2.innerText = forecast.temp.toFixed(0).toString();
+        subElement1.appendChild(subElement2);
+        var subElement3 = document.createElement("span");
+        subElement3.innerHTML = "&nbsp;&deg;C";
+        subElement2.appendChild(subElement3);
+        parentElement.appendChild(mainElement);
+    };
+    Forecast.prototype.createPressureElement = function (parentElement, forecast) {
+        var mainElement = document.createElement("div");
+        mainElement.className = "column p-1 is-3 is-flex is-justify-content-center is-align-items-center";
+        var subElement1 = document.createElement("div");
+        subElement1.className = "subtitle is-6";
+        mainElement.appendChild(subElement1);
+        var subElement2 = document.createElement("span");
+        subElement2.innerText = "Ciś. ";
+        subElement1.appendChild(subElement2);
+        var subElement3 = document.createElement("span");
+        subElement3.innerText = forecast.pressure.toFixed(0).toString();
+        subElement2.appendChild(subElement3);
+        var subElement4 = document.createElement("span");
+        subElement4.innerHTML = "&nbsp;hPa";
+        subElement3.appendChild(subElement4);
+        parentElement.appendChild(mainElement);
+    };
+    Forecast.prototype.createHumidityElement = function (parentElement, forecast) {
+        var mainElement = document.createElement("div");
+        mainElement.className = "column p-1 is-3 is-flex is-justify-content-center is-align-items-center";
+        var subElement1 = document.createElement("div");
+        subElement1.className = "subtitle is-6";
+        mainElement.appendChild(subElement1);
+        var subElement2 = document.createElement("span");
+        subElement2.innerText = "Wilg. ";
+        subElement1.appendChild(subElement2);
+        var subElement3 = document.createElement("span");
+        subElement3.innerText = forecast.humidity.toFixed(0).toString();
+        subElement2.appendChild(subElement3);
+        var subElement4 = document.createElement("span");
+        subElement4.innerHTML = "%";
+        subElement3.appendChild(subElement4);
+        parentElement.appendChild(mainElement);
+    };
+    Forecast.prototype.createDateTimeElement = function (parentElement, forecast) {
+        var mainElement = document.createElement("div");
+        mainElement.className = "column p-1 is-4 is-flex is-justify-content-center is-align-items-center";
+        var subElement1 = document.createElement("div");
+        subElement1.className = "subtitle is-6";
+        mainElement.appendChild(subElement1);
+        var subElement2 = document.createElement("span");
+        subElement2.innerText = this.timeConverter(forecast.dt);
+        subElement1.appendChild(subElement2);
+        parentElement.appendChild(mainElement);
+    };
+    Forecast.prototype.timeConverter = function (UNIX_timestamp) {
+        var a = new Date(UNIX_timestamp * 1000);
+        var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        var year = a.getFullYear();
+        var month = months[a.getMonth()];
+        var date = a.getDate();
+        var hour = a.getHours();
+        var min = a.getMinutes();
+        var sec = a.getSeconds();
+        var time = date + ' ' + month + ' ' + year + ' g. ' + hour + ':00';
+        return time;
+    };
+    return Forecast;
+}());
 /// <reference path='allWeathers.ts'/>
+/// <reference path='forecast.ts'/>
 var Main = /** @class */ (function () {
     function Main() {
-        this.allWeathers = new AllWeathers();
+        var _this = this;
+        this.allWeathers = new AllWeathers(function (cityName, cords) { return _this.showForecast(cityName, cords); });
+        this.forecast = new Forecast();
         this.initDocumentElements();
     }
+    Main.prototype.showForecast = function (cityName, cords) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.forecast.showForecast(cityName, cords)];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
     Main.prototype.initDocumentElements = function () {
         var _this = this;
         this.addButton = document.getElementById("add-city-button");
-        this.addInput = document.getElementById("add-city-input");
         this.addButton.addEventListener('click', function () { return _this.addNewCity(); });
+        this.addInput = document.getElementById("add-city-input");
         this.addInput.addEventListener('change', function () { return _this.addNewCity(); });
     };
     Main.prototype.addNewCity = function () {

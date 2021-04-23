@@ -9,6 +9,23 @@
 </head>
 <body>
 
+    <div id="forecast-modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+          <header class="modal-card-head has-text-centered">
+            <p class="modal-card-title"><span>Prognoza pogody dla </span><span id="forecast-city"></span></p>
+          </header>
+          <section class="modal-card-body">
+            <div id="forecast-elements-section" class="columns is-multiline"></div>
+          </section>
+          <footer class="modal-card-foot">
+            <div class="container has-text-centered">
+                <button id="close-forecast-button" class="button is-info">Zamknij</button>
+            </div>
+          </footer>
+        </div>
+    </div>
+
     <section class="hero is-small is-info">
         <div class="hero-body">
             <div class="container has-text-centered">
