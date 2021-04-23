@@ -168,7 +168,7 @@ var CityWeather = /** @class */ (function () {
         container.className = "container";
         cardContent.appendChild(container);
         var imgColumns = document.createElement("div");
-        imgColumns.className = "columns is-centered";
+        imgColumns.className = "columns is-centered is-mobile";
         container.appendChild(imgColumns);
         var imgColumn = document.createElement("div");
         imgColumn.className = "column is-narrow p-0";
