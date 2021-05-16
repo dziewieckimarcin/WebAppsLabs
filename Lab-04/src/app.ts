@@ -1,13 +1,9 @@
 export class App {
-    login = 'asd'
-    constructor() {
-        // const b = new Form()
-    }
-    getThis(e: any) {
-        console.log(this, e)
-    }
-    aa() {
 
+    constructor(){
+        let x = document.getElementById('hero');
+        x.classList.replace('is-info', 'is-primary');
     }
+
+
 }
-export const AAA = 10;
