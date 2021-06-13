@@ -71,7 +71,13 @@ class NoteEditor{
 
     public show(noteData: NoteData = new NoteData()){
 
-        this.data = noteData;
+        this.data = new NoteData();
+        this.data.Color = noteData.Color;
+        this.data.CreateDate = noteData.CreateDate;
+        this.data.Id = noteData.Id;
+        this.data.IsPinned = noteData.IsPinned;
+        this.data.Note = noteData.Note;
+        this.data.Title = noteData.Title;
 
         this.noteTitleInput.value = this.data.Title;
         this.noteContentTextArea.value = this.data.Note;

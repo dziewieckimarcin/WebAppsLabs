@@ -17,7 +17,6 @@ class App{
     }
     editNote(note: NoteData) {
         this.noteEditor.show(note);
-        console.log(note);
     }
 
     addOrUpdateNote(note: NoteData){

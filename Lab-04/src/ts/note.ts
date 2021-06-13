@@ -23,6 +23,10 @@ class Note{
         this.updateValuesOnHtmlElements();
     }
 
+    public getId():string{
+        return this.data.Id;
+    }
+
     private updateValuesOnHtmlElements(){
         this.titleElement.innerText = this.data.Title;
         this.contentElement.value = this.data.Note;
@@ -31,7 +35,7 @@ class Note{
 
     }
 
-    createHtmlElements(parentElement: HTMLElement){
+    private createHtmlElements(parentElement: HTMLElement){
         this.mainElement = document.createElement("div");
         this.mainElement.className = "column is-half-tablet is-two-fifths-desktop is-one-third-widescreen";
 
@@ -114,7 +118,11 @@ class Note{
         cardHeaderClose.appendChild(deleteButtonElement);
     }
 
-    private delete(){
+    forceDelete(){
+        this.mainElement.parentElement.removeChild(this.mainElement);
+    }
+
+    delete(){
         this.deleteCallback(this.data.Id);
         this.mainElement.parentElement.removeChild(this.mainElement);
     }
