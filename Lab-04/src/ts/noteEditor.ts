@@ -19,8 +19,6 @@ class NoteEditor{
     private modalHeader : HTMLElement;
     private modalFooter : HTMLElement;
 
-    private previousColor: number = 1;
-
     private data: NoteData;
 
     private saveNoteCallback: (note: NoteData) => void;
@@ -68,7 +66,7 @@ class NoteEditor{
 
     changePinnedStatus(){
         this.data.IsPinned = !this.data.IsPinned;
-        this.UpdatePinnedStatus();
+        this.updatePinnedStatus();
     }
 
     public show(noteData: NoteData = new NoteData()){
@@ -78,13 +76,13 @@ class NoteEditor{
         this.noteTitleInput.value = this.data.Title;
         this.noteContentTextArea.value = this.data.Note;
 
-        this.UpdatePinnedStatus();
+        this.updatePinnedStatus();
         this.updateNoteColor();
 
         this.modalElement.classList.add('is-active');
     }
 
-    private UpdatePinnedStatus() {
+    private updatePinnedStatus() {
         if (this.data.IsPinned) {
             this.notePinButton.innerText = 'Odepnij';
         }
@@ -106,28 +104,28 @@ class NoteEditor{
     }
 
     private setNewColor(colorNumber: number){
-        this.previousColor = this.data.Color;
         this.data.Color = colorNumber;
 
         this.updateNoteColor();
     }
 
     private updateNoteColor(){        
+
         let classNameToAdd = NoteData.getColorClassName(this.data.Color);
-        let classNameToRemove = NoteData.getColorClassName(this.previousColor);
-        
-        this.modalHeader.classList.add(classNameToAdd);
-        this.modalFooter.classList.add(classNameToAdd);
 
-        if (classNameToAdd != classNameToRemove){
-            this.modalHeader.classList.remove(classNameToRemove);
-            this.modalFooter.classList.remove(classNameToRemove);
+        for (let i=1; i<=5; i++){
+            let className = NoteData.getColorClassName(i);
+
+            if (i == this.data.Color){
+                this.modalHeader.classList.add(className);
+                this.modalFooter.classList.add(className);
+            }
+            else{
+                this.modalHeader.classList.remove(className);
+                this.modalFooter.classList.remove(className);
+            }
         }
-        
     }
-
-    
-
 }
 
 export {NoteEditor}

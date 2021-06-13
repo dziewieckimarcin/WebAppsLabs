@@ -1,212 +1,127 @@
+import { NoteData } from "./noteData";
 
 class Note{
 
-    //private weatherApi = new WeatherApi();
 
-    // private modalElement: HTMLElement;
-    // private closeModalButton: HTMLButtonElement;
-    // private forecastElementsSection: HTMLElement;
-    // private forecastCityNameElement: HTMLElement;
+    private data: NoteData;
 
-    // constructor(){
-    //     this.modalElement = document.getElementById("forecast-modal") as HTMLElement;
-    //     this.forecastElementsSection = document.getElementById("forecast-elements-section") as HTMLElement;
+    private mainElement : HTMLElement;
+    private titleElement : HTMLElement;
+    private contentElement: HTMLTextAreaElement;
+    private editButtonElement : HTMLButtonElement;
+    private cardHeaderElement : HTMLElement;
+    private cardFooterElement : HTMLElement;
 
-    //     this.closeModalButton = document.getElementById("close-forecast-button") as HTMLButtonElement;
-    //     this.closeModalButton.addEventListener('click', () => this.hideForecast());
+    private deleteCallback: (id: string) => void;
+    private editCallback: (note: NoteData) => void;
 
-    //     this.forecastCityNameElement = document.getElementById("forecast-city") as HTMLElement;
-    // }
+    constructor(note: NoteData, parentElement: HTMLElement, deleteCallback: (id: string) => void, editCallback: (note: NoteData) => void){
+        this.deleteCallback = deleteCallback;
+        this.editCallback = editCallback;
+        this.data = note;
+        this.createHtmlElements(parentElement);
+        this.updateValuesOnHtmlElements();
+    }
 
-    // private hideForecast(){
-    //     this.modalElement.classList.remove("is-active");
-    //     this.forecastCityNameElement.innerText = '';
-    //     this.forecastElementsSection.innerHTML = '';
-    // }
+    private updateValuesOnHtmlElements(){
+        this.titleElement.innerText = this.data.Title;
+        this.contentElement.value = this.data.Note;
+        this.cardHeaderElement.classList.add(NoteData.getColorClassName(this.data.Color));
+        this.cardFooterElement.classList.add(NoteData.getColorClassName(this.data.Color));
 
-    // async showForecast(cityName: string, cords: Coord){
-    //     let forecast = await this.weatherApi.getForecastByCity(cityName, cords);
+    }
 
-    //     if (forecast == null){
-    //         // show notification error
-    //         return;
-    //     }
+    createHtmlElements(parentElement: HTMLElement){
+        this.mainElement = document.createElement("div");
+        this.mainElement.className = "column is-half-tablet is-two-fifths-desktop is-one-third-widescreen";
+
+        let cardElement = document.createElement("div");
+        cardElement.className = "card";
+        this.mainElement.appendChild(cardElement);
+
+        this.createCardHeader(cardElement);
+        this.createCardContent(cardElement);
+        this.createForecastCardFooter(cardElement);
+
+        parentElement.appendChild(this.mainElement);
+    }
+
+    private createForecastCardFooter(cardElement: HTMLDivElement) {
+        this.cardFooterElement = document.createElement("div");
+        this.cardFooterElement.className = "card-footer";
+        cardElement.appendChild(this.cardFooterElement);
+
+        this.createForecastFooterItem(this.cardFooterElement);
+    }
+
+    private createForecastFooterItem(cardElement: HTMLElement) {
+        let forecastCardFooterItem = document.createElement("div");
+        forecastCardFooterItem.className = "card-footer-item is-half";
+        cardElement.appendChild(forecastCardFooterItem);
+
+        let cardFooterItemContainer = document.createElement("div");
+        cardFooterItemContainer.className = "container";
+        forecastCardFooterItem.appendChild(cardFooterItemContainer);
+
+        let cardFooterItemContent = document.createElement("div");
+        cardFooterItemContent.className = "content has-text-centered";
+        cardFooterItemContainer.appendChild(cardFooterItemContent);
+
+        this.editButtonElement = document.createElement("button");
+        this.editButtonElement.className = "button is-info";
+        this.editButtonElement.innerText = "Edytuj";
+        this.editButtonElement.addEventListener("click", () => this.edit())
+        cardFooterItemContent.appendChild(this.editButtonElement);
+    }
+
+    private createCardContent(cardElement: HTMLDivElement) {
+        let cardContent = document.createElement("div");
+        cardContent.className = "card-content pt-2";
+        cardElement.appendChild(cardContent);
+
+        let container = document.createElement("div");
+        container.className = "container pt-4";
+        cardContent.appendChild(container);
+
+        this.contentElement  = document.createElement("textarea");
+        this.contentElement.className = "textarea is-info has-fixed-size";
+        this.contentElement.readOnly = true;
+        container.appendChild(this.contentElement);
+
         
-    //     this.buildForecastElements(forecast.hourly);
-    //     this.forecastCityNameElement.innerText = cityName;
-    //     this.modalElement.classList.add("is-active");
-    // }
-    
-    // private buildForecastElements(forecastCollection: Hourly[]){
-    //     forecastCollection.forEach(x => this.buildMainElement(x));
-    // }
+    }
 
-    // private buildMainElement(forecast: Hourly){
+    private createCardHeader(cardElement: HTMLElement) {
+        this.cardHeaderElement = document.createElement("div");
+        this.cardHeaderElement.className = "card-header";
+        cardElement.appendChild(this.cardHeaderElement);
 
-    //     let mainElement = document.createElement("div");
-    //     mainElement.className = "column p-1 is-full";
+        let cardHeaderTitle = document.createElement("div");
+        cardHeaderTitle.className = "card-header-title";
+        this.cardHeaderElement.appendChild(cardHeaderTitle);
 
-    //     let subElement1 = document.createElement("div");
-    //     subElement1.className = "box p-3";
-    //     mainElement.appendChild(subElement1);
+        this.titleElement = document.createElement("div");
+        this.titleElement.className = "container has-text-centered";
+        cardHeaderTitle.appendChild(this.titleElement);
 
-    //     let subElement2 = document.createElement("div");
-    //     subElement2.className = "container";
-    //     subElement1.appendChild(subElement2);
+        let cardHeaderClose = document.createElement("div");
+        cardHeaderClose.className = "p-3";
+        this.cardHeaderElement.appendChild(cardHeaderClose);
 
-    //     let subElement3 = document.createElement("div");
-    //     subElement3.className = "columns is-mobile";
-    //     subElement2.appendChild(subElement3);
+        let deleteButtonElement = document.createElement("button");
+        deleteButtonElement.className = "has-background-info delete is-medium";
+        deleteButtonElement.addEventListener("click", () => this.delete());
+        cardHeaderClose.appendChild(deleteButtonElement);
+    }
 
-    //     this.createMobileImageElement(subElement3, forecast);
-    //     this.createFullSizeElement(subElement3, forecast);
+    private delete(){
+        this.deleteCallback(this.data.Id);
+        this.mainElement.parentElement.removeChild(this.mainElement);
+    }
 
-    //     this.forecastElementsSection.appendChild(mainElement);
-    // }
-    
-    // private createMobileImageElement(parentElement: HTMLElement, forecast: Hourly){
-    //     let mainElement = document.createElement("div");
-    //     mainElement.className = "column is-half-mobile is-hidden-tablet is-flex is-justify-content-center is-align-items-center";
-
-    //     let subElement1 = document.createElement("figure");
-    //     subElement1.className = "image is-96x96 p-0";
-    //     mainElement.appendChild(subElement1);
-
-    //     let subElement2 = document.createElement("img");
-    //     subElement2.src = `./images/${forecast.weather[0].icon}.png`;
-    //     subElement1.appendChild(subElement2);
-
-    //     parentElement.appendChild(mainElement);
-    // }
-
-    // private createFullSizeElement(parentElement: HTMLElement, forecast: Hourly){
-    //     let mainElement = document.createElement("div");
-    //     mainElement.className = "column is-half-mobile";
-
-    //     let subElement1 = document.createElement("div");
-    //     subElement1.className = "container";
-    //     mainElement.appendChild(subElement1);
-
-    //     let subElement2 = document.createElement("div");
-    //     subElement2.className = "columns p-0";
-    //     subElement1.appendChild(subElement2);
-
-    //     this.createFullSizeImageElement(subElement2, forecast);
-    //     this.createTemperatureElement(subElement2, forecast);
-    //     this.createPressureElement(subElement2, forecast);
-    //     this.createHumidityElement(subElement2, forecast);
-    //     this.createDateTimeElement(subElement2, forecast);
-
-    //     parentElement.appendChild(mainElement);
-    // }
-
-    // private createFullSizeImageElement(parentElement: HTMLElement, forecast: Hourly){
-    //     let mainElement = document.createElement("div");
-    //     mainElement.className = "column is-hidden-mobile p-0 is-1 is-flex is-justify-content-center is-align-items-center";
-
-    //     let subElement1 = document.createElement("figure");
-    //     subElement1.className = "image is-48x48 p-0";
-    //     mainElement.appendChild(subElement1);
-
-    //     let subElement2 = document.createElement("img");
-    //     subElement2.src = `./images/${forecast.weather[0].icon}.png`;
-    //     subElement1.appendChild(subElement2);
-
-    //     parentElement.appendChild(mainElement);
-    // }
-
-    // private createTemperatureElement(parentElement: HTMLElement, forecast: Hourly){
-    //     let mainElement = document.createElement("div");
-    //     mainElement.className = "column p-1 is-1 is-flex is-justify-content-center is-align-items-center";
-
-    //     let subElement1 = document.createElement("div");
-    //     subElement1.className = "subtitle is-6";
-    //     mainElement.appendChild(subElement1);
-
-    //     let subElement2 = document.createElement("span");
-    //     subElement2.innerText = forecast.temp.toFixed(0).toString();
-    //     subElement1.appendChild(subElement2);
-
-    //     let subElement3 = document.createElement("span");
-    //     subElement3.innerHTML = "&nbsp;&deg;C";
-    //     subElement2.appendChild(subElement3);
-
-    //     parentElement.appendChild(mainElement);
-    // }
-
-    // private createPressureElement(parentElement: HTMLElement, forecast: Hourly){
-    //     let mainElement = document.createElement("div");
-    //     mainElement.className = "column p-1 is-3 is-flex is-justify-content-center is-align-items-center";
-
-    //     let subElement1 = document.createElement("div");
-    //     subElement1.className = "subtitle is-6";
-    //     mainElement.appendChild(subElement1);
-
-    //     let subElement2 = document.createElement("span");
-    //     subElement2.innerText = "Ciś. ";
-    //     subElement1.appendChild(subElement2);
-
-    //     let subElement3 = document.createElement("span");
-    //     subElement3.innerText = forecast.pressure.toFixed(0).toString();
-    //     subElement2.appendChild(subElement3);
-
-    //     let subElement4 = document.createElement("span");
-    //     subElement4.innerHTML = "&nbsp;hPa";
-    //     subElement3.appendChild(subElement4);
-
-    //     parentElement.appendChild(mainElement);
-    // }
-
-    // private createHumidityElement(parentElement: HTMLElement, forecast: Hourly){
-    //     let mainElement = document.createElement("div");
-    //     mainElement.className = "column p-1 is-3 is-flex is-justify-content-center is-align-items-center";
-
-    //     let subElement1 = document.createElement("div");
-    //     subElement1.className = "subtitle is-6";
-    //     mainElement.appendChild(subElement1);
-
-    //     let subElement2 = document.createElement("span");
-    //     subElement2.innerText = "Wilg. ";
-    //     subElement1.appendChild(subElement2);
-
-    //     let subElement3 = document.createElement("span");
-    //     subElement3.innerText = forecast.humidity.toFixed(0).toString();
-    //     subElement2.appendChild(subElement3);
-
-    //     let subElement4 = document.createElement("span");
-    //     subElement4.innerHTML = "%";
-    //     subElement3.appendChild(subElement4);
-
-    //     parentElement.appendChild(mainElement);
-    // }
-
-    // private createDateTimeElement(parentElement: HTMLElement, forecast: Hourly){
-    //     let mainElement = document.createElement("div");
-    //     mainElement.className = "column p-1 is-4 is-flex is-justify-content-center is-align-items-center";
-
-    //     let subElement1 = document.createElement("div");
-    //     subElement1.className = "subtitle is-6";
-    //     mainElement.appendChild(subElement1);
-
-    //     let subElement2 = document.createElement("span");
-    //     subElement2.innerText = this.timeConverter(forecast.dt);
-    //     subElement1.appendChild(subElement2);
-
-    //     parentElement.appendChild(mainElement);
-    // }
-
-    // private timeConverter(UNIX_timestamp: number): string{
-    //     var a = new Date(UNIX_timestamp * 1000);
-    //     var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    //     var year = a.getFullYear();
-    //     var month = months[a.getMonth()];
-    //     var date = a.getDate();
-    //     var hour = a.getHours();
-    //     var min = a.getMinutes();
-    //     var sec = a.getSeconds();
-    //     var time = date + ' ' + month + ' ' + year + ' g. ' + hour + ':00';
-    //     return time;
-    //   }
+    private edit(){
+        this.editCallback(this.data);
+    }
 }
 
 export {Note}
