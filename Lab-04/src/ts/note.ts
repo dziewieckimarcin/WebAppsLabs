@@ -12,6 +12,7 @@ class Note{
     private cardHeaderElement : HTMLElement;
     private cardFooterElement : HTMLElement;
     private createTimeElement: HTMLElement;
+    private isPinnedElement: HTMLElement;
 
     private deleteCallback: (id: string) => void;
     private editCallback: (note: NoteData) => void;
@@ -35,6 +36,12 @@ class Note{
         this.cardFooterElement.classList.add(NoteData.getColorClassName(this.data.Color));
         this.createTimeElement.innerHTML = "Data utworzenia: <br>" + new Date(this.data.CreateDate).toLocaleString();
 
+        if (this.data.IsPinned){
+            this.isPinnedElement.innerHTML = "Przypięte";
+        }
+        else{
+            this.isPinnedElement.innerHTML = "";
+        }
     }
 
     private createHtmlElements(parentElement: HTMLElement){
@@ -86,17 +93,33 @@ class Note{
         cardElement.appendChild(cardContent);
 
         this.createCardContentTextArea(cardContent);
-        this.createCardContentCreateDate(cardContent);        
+        this.createCardContentCreateDateAndPinnedStatus(cardContent);        
     }
 
-    private createCardContentCreateDate(cardContent: HTMLElement) {
+    private createCardContentCreateDateAndPinnedStatus(cardContent: HTMLElement) {
         let container = document.createElement("div");
         container.className = "container pt-4";
         cardContent.appendChild(container);
 
+        let columns = document.createElement("div");
+        columns.className = "columns is-mobile";
+        container.appendChild(columns);
+
+        let dateColumn = document.createElement("div");
+        dateColumn.className = "column is-half";
+        columns.appendChild(dateColumn);
+
         this.createTimeElement = document.createElement("h6");
         this.createTimeElement.className = "subtitle is-6 is-size-7";
-        container.appendChild(this.createTimeElement);
+        dateColumn.appendChild(this.createTimeElement);
+
+        let pinColumn = document.createElement("div");
+        pinColumn.className = "column is-half has-text-right";
+        columns.appendChild(pinColumn);
+
+        this.isPinnedElement = document.createElement("h6");
+        this.isPinnedElement.className = "subtitle is-6 py-1";
+        pinColumn.appendChild(this.isPinnedElement);
     }
 
     private createCardContentTextArea(cardContent: HTMLElement) {
