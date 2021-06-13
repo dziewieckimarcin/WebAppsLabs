@@ -11,6 +11,7 @@ class Note{
     private editButtonElement : HTMLButtonElement;
     private cardHeaderElement : HTMLElement;
     private cardFooterElement : HTMLElement;
+    private createTimeElement: HTMLElement;
 
     private deleteCallback: (id: string) => void;
     private editCallback: (note: NoteData) => void;
@@ -32,6 +33,7 @@ class Note{
         this.contentElement.value = this.data.Note;
         this.cardHeaderElement.classList.add(NoteData.getColorClassName(this.data.Color));
         this.cardFooterElement.classList.add(NoteData.getColorClassName(this.data.Color));
+        this.createTimeElement.innerHTML = "Data utworzenia: <br>" + new Date(this.data.CreateDate).toLocaleString();
 
     }
 
@@ -80,19 +82,32 @@ class Note{
 
     private createCardContent(cardElement: HTMLDivElement) {
         let cardContent = document.createElement("div");
-        cardContent.className = "card-content pt-2";
+        cardContent.className = "card-content py-2";
         cardElement.appendChild(cardContent);
 
+        this.createCardContentTextArea(cardContent);
+        this.createCardContentCreateDate(cardContent);        
+    }
+
+    private createCardContentCreateDate(cardContent: HTMLElement) {
         let container = document.createElement("div");
         container.className = "container pt-4";
         cardContent.appendChild(container);
 
-        this.contentElement  = document.createElement("textarea");
+        this.createTimeElement = document.createElement("h6");
+        this.createTimeElement.className = "subtitle is-6 is-size-7";
+        container.appendChild(this.createTimeElement);
+    }
+
+    private createCardContentTextArea(cardContent: HTMLElement) {
+        let container = document.createElement("div");
+        container.className = "container pt-4";
+        cardContent.appendChild(container);
+
+        this.contentElement = document.createElement("textarea");
         this.contentElement.className = "textarea is-info has-fixed-size";
         this.contentElement.readOnly = true;
         container.appendChild(this.contentElement);
-
-        
     }
 
     private createCardHeader(cardElement: HTMLElement) {
@@ -124,7 +139,7 @@ class Note{
 
     delete(){
         this.deleteCallback(this.data.Id);
-        this.mainElement.parentElement.removeChild(this.mainElement);
+        this.forceDelete();
     }
 
     private edit(){
