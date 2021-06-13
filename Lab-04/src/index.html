@@ -3,22 +3,59 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pogodynka</title>
+    <title>Notatki</title>
   </head>
   <body>
     
     <div id="note-modal" class="modal">
       <div class="modal-background"></div>
       <div class="modal-card">
-        <header class="modal-card-head has-text-centered">
-          <p class="modal-card-title"><span>Prognoza pogody dla </span><span id="forecast-city"></span></p>
+        <header id="note-details-header" class="modal-card-head has-text-centered">
+          <p class="modal-card-title">
+            <input id="note-details-title" class="input is-info" type="text" placeholder="Tytuł notatki">
+          </p>
+          <div class="buttons pl-4">
+            <button id="note-details-pin-button" class="button is-info">Przypnij</button>
+          </div>
         </header>
         <section class="modal-card-body">
-          <div id="note-elements-section" class="columns is-multiline"></div>
+          <textarea id="note-details-content" class="textarea is-info" placeholder="Treść notatki"></textarea>
+          <div class="container pt-4 px-3">
+            <div class="columns is-mobile">
+              <div class="column is-one-fifth">
+                <div class="buttons is-centered">
+                  <button id="note-details-color1" class="button is-link is-rounded"></button>
+                </div>
+              </div>
+              <div class="column is-one-fifth">
+                <div class="buttons is-centered">
+                  <button id="note-details-color2" class="button is-primary is-rounded"></button>
+                </div>
+              </div>
+              <div class="column is-one-fifth">
+                <div class="buttons is-centered">
+                  <button id="note-details-color3" class="button is-success is-rounded"></button>
+                </div>
+              </div>
+              <div class="column is-one-fifth">
+                <div class="buttons is-centered">
+                  <button id="note-details-color4" class="button is-warning is-rounded"></button>
+                </div>
+              </div>
+              <div class="column is-one-fifth">
+                <div class="buttons is-centered">
+                  <button  id="note-details-color5" class="button is-danger is-rounded"></button>
+                </div>
+              </div>
+            </div>
+          </div>
         </section>
-        <footer class="modal-card-foot">
+        <footer id="note-details-footer" class="modal-card-foot">
           <div class="container has-text-centered">
-              <button id="close-note-button" class="button is-info">Zapisz</button>
+            <div class="buttons is-centered">
+              <button id="cancel-note-details-button" class="button is-info">Anuluj</button>
+              <button id="save-note-details-button" class="button is-info">Zapisz</button>
+            </div>
           </div>
         </footer>
       </div>
@@ -28,7 +65,7 @@
       <div class="hero-body">
           <div class="container has-text-centered">
               <p class="title">
-                  Pogodynka
+                  Notatki
                 </p>
           </div>
       </div>
