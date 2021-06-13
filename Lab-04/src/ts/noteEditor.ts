@@ -101,6 +101,10 @@ class NoteEditor{
         this.data.Title = this.noteTitleInput.value;
         this.data.Note = this.noteContentTextArea.value;
 
+        if (this.data.Title == ''){
+            this.data.Title = 'Notatka - ' + new Date(this.data.CreateDate).toLocaleString();
+        }
+
         this.modalElement.classList.remove('is-active');
         this.saveNoteCallback(this.data);
     }
