@@ -25,8 +25,18 @@ class AllNotes{
         });
         this.notesCollection = [];
         
-        for (let index = 0; index < this.notesDataCollection.length; index++) {
-            let noteToAdd = new Note(this.notesDataCollection[index],this.allNotesSectionElement, (id) => this.removeNoteData(id), (note) => this.editNote(note))
+
+        let orderedNotesDataCollection = this.notesDataCollection.sort((a,b) => {
+            if (a.IsPinned == b.IsPinned){
+                if (a.CreateDate > b.CreateDate) return -1;
+                else return 1;
+            }
+            else if(a.IsPinned) return -1;
+            else return 1;
+        });
+
+        for (let index = 0; index < orderedNotesDataCollection.length; index++) {
+            let noteToAdd = new Note(orderedNotesDataCollection[index],this.allNotesSectionElement, (id) => this.removeNoteData(id), (note) => this.editNote(note))
         this.notesCollection.push(noteToAdd)  
         }
     }
