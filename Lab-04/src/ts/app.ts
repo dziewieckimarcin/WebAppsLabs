@@ -1,31 +1,40 @@
 import { AllNotes } from "./allNotes";
 import { Note } from "./note";
+import { NoteData } from "./noteData";
+import { NoteEditor } from "./noteEditor";
 
 class App{
 
-    // private addButton : HTMLButtonElement;
+    private addNewNoteButton : HTMLButtonElement;
+
+    private noteEditor: NoteEditor;
     // private addInput : HTMLInputElement;
 
     // private allNotes = new AllNotes((cityName, cords) => this.showForecast(cityName, cords));
     // private forecast = new Note();
     
-    // constructor(){
-    //     this.initDocumentElements();
-    // }
+    constructor(){
+        this.initDocumentElements();
+
+        this.noteEditor = new NoteEditor((note: NoteData) => this.addOrUpdateNote(note))
+    }
+
+    addOrUpdateNote(note: NoteData){
+        // toDo: implement pass event
+        console.log(note);
+    }
 
     // private async showForecast(cityName: string, cords: Coord){
     //     await this.forecast.showForecast(cityName, cords);
     // }
 
-    // private initDocumentElements() {
-    //     this.addButton = document.getElementById("add-city-button") as HTMLButtonElement;
-    //     this.addButton.addEventListener('click', () => this.addNewCity());
+    private initDocumentElements() {
+        this.addNewNoteButton = document.getElementById("add-new-note-button") as HTMLButtonElement;
+        this.addNewNoteButton.addEventListener('click', () => this.noteEditor.show());
 
-    //     this.addInput = document.getElementById("add-city-input") as HTMLInputElement;
-    //     this.addInput.addEventListener('change', () => this.addNewCity());
-    // }
+    }
 
-    // private async addNewCity(){
+    // private async addNewNote(){
     //     let cityName = this.addInput.value;
     //     await this.allNotes.addCityWeather(cityName);
     // }
