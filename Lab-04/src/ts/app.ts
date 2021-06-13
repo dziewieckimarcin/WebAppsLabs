@@ -5,6 +5,8 @@ import { NoteEditor } from "./noteEditor";
 class App{
 
     private addNewNoteButton : HTMLButtonElement;
+    private filterInputElement : HTMLInputElement;
+    private clearFilterButton : HTMLButtonElement;
 
     private noteEditor: NoteEditor;
     private allNotes: AllNotes;
@@ -27,6 +29,20 @@ class App{
         this.addNewNoteButton = document.getElementById("add-new-note-button") as HTMLButtonElement;
         this.addNewNoteButton.addEventListener('click', () => this.noteEditor.show());
 
+        this.filterInputElement = document.getElementById("search-notes-input") as HTMLInputElement;
+        this.filterInputElement.addEventListener('input', () => this.filterNotes());
+
+        this.clearFilterButton = document.getElementById("clear-search-button") as HTMLButtonElement;
+        this.clearFilterButton.addEventListener('click', () => this.clearFilterInput());
+    }
+
+    filterNotes(){
+        this.allNotes.refreshNotesCollection(this.filterInputElement.value);
+    }
+
+    clearFilterInput(){
+        this.filterInputElement.value = '';
+        this.filterNotes();
     }
 }
 

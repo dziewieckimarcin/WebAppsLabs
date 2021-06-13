@@ -7,6 +7,8 @@ class AllNotes{
     private notesCollection : Note[] = [];
     private notesDataCollection : NoteData[] = [];
 
+    private filterText: string = '';
+
     private allNotesSectionElement: HTMLElement;
 
     private editNoteCallback: (note: NoteData) => void;
@@ -20,24 +22,42 @@ class AllNotes{
         this.removeNoteData(noteData.Id);
         this.notesDataCollection.push(noteData);
 
+        this.refreshNotesCollection();
+    }
+
+    public refreshNotesCollection(filter: string = null) {
+        
         this.notesCollection.forEach(element => {
             element.forceDelete();
         });
         this.notesCollection = [];
-        
 
-        let orderedNotesDataCollection = this.notesDataCollection.sort((a,b) => {
-            if (a.IsPinned == b.IsPinned){
-                if (a.CreateDate > b.CreateDate) return -1;
-                else return 1;
+        if (filter != null){
+            this.filterText = filter;
+        }
+
+        let filteredNotesDataCollection = this.notesDataCollection;
+
+        if (this.filterText.length > 0){
+            filteredNotesDataCollection = this.notesDataCollection.filter(x => x.Title.toLocaleLowerCase().includes(this.filterText.toLowerCase()) || x.Note.toLowerCase().includes(this.filterText.toLowerCase()))
+        }
+
+        let orderedNotesDataCollection = filteredNotesDataCollection.sort((a, b) => {
+            if (a.IsPinned == b.IsPinned) {
+                if (a.CreateDate > b.CreateDate)
+                    return -1;
+                else
+                    return 1;
             }
-            else if(a.IsPinned) return -1;
-            else return 1;
+            else if (a.IsPinned)
+                return -1;
+            else
+                return 1;
         });
 
         for (let index = 0; index < orderedNotesDataCollection.length; index++) {
-            let noteToAdd = new Note(orderedNotesDataCollection[index],this.allNotesSectionElement, (id) => this.removeNoteData(id), (note) => this.editNote(note))
-        this.notesCollection.push(noteToAdd)  
+            let noteToAdd = new Note(orderedNotesDataCollection[index], this.allNotesSectionElement, (id) => this.removeNoteData(id), (note) => this.editNote(note));
+            this.notesCollection.push(noteToAdd);
         }
     }
 
